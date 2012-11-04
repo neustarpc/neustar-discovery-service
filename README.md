@@ -23,11 +23,35 @@ Then the combined XRI/XDI discovery proxy service is available at
 
 ### Example XRI discovery request and response
 
-Request URI:
+The following functionality is compatible with [XRI Resolution 2.0](http://docs.oasis-open.org/xri/2.0/specs/xri-resolution-V2.0.html).
+
+HTTP GET request:
 
 	http://localhost:12220/=markus?_xrd_r=application/xrd+xml;sep=true;nodefault_t=true;debug=1&_xrd_t=xri://$xdi!($v!1)
 
-### Example XDI discovery request
+HTTP GET response:
+
+	<?xml version="1.0" encoding="UTF-8"?>
+	<XRD version="2.0" xmlns="xri://$xrd*($v*2.0)">
+		<Query>*markus</Query>
+		<Status cid="verified" code="100" />
+		<ServerStatus code="100" />
+		<Expires>2012-11-04T15:28:14.000Z</Expires>
+		<ProviderID>xri://=</ProviderID>
+		<LocalID>!91f2.8153.f600.ae24</LocalID>
+		<CanonicalID>=!91F2.8153.F600.AE24</CanonicalID>
+		<Service priority="10">
+			<ProviderID>@!26E.5985.6045.FCED</ProviderID>
+			<Type select="true">xri://$xdi!($v!1)</Type>
+			<Path select="true">($context)!($xdi)!($v!1) </Path>
+			<MediaType match="default" select="false" />
+			<URI append="none">https://xdi.fullxri.com/=!91F2.8153.F600.AE24/</URI>
+		</Service>
+	</XRD>
+
+### Example XDI discovery request and response
+
+The following functionality is compatible with [XDI Discovery 1.0](https://wiki.oasis-open.org/xdi/CategoryDiscovery).
 
 HTTP POST request:
 
