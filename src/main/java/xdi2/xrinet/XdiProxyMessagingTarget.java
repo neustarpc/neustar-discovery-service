@@ -1,5 +1,14 @@
 package xdi2.xrinet;
 
+import org.openxri.XRI;
+import org.openxri.proxy.impl.AbstractProxy;
+import org.openxri.resolve.Resolver;
+import org.openxri.resolve.ResolverFlags;
+import org.openxri.resolve.ResolverState;
+import org.openxri.resolve.exception.PartialResolutionException;
+import org.openxri.xml.Status;
+import org.openxri.xml.XRD;
+
 import xdi2.core.ContextNode;
 import xdi2.core.Graph;
 import xdi2.core.constants.XDIConstants;
@@ -17,24 +26,19 @@ import xdi2.messaging.target.AbstractContextHandler;
 import xdi2.messaging.target.AbstractMessagingTarget;
 import xdi2.messaging.target.AddressHandler;
 import xdi2.messaging.target.ExecutionContext;
-import xdi2.xrinet.resolution.XriResolutionException;
-import xdi2.xrinet.resolution.XriResolutionResult;
-import xdi2.xrinet.resolution.XriResolver;
 
-public class XriNetMessagingTarget extends AbstractMessagingTarget {
+public class XdiProxyMessagingTarget extends AbstractMessagingTarget {
 
 	public static final String XRI_URI = "$uri";
 	public static final String STRING_TYPE_XDI = "$xdi$*($v)$!1";
 	public static final XRI3Segment XRI_TYPE_XDI = new XRI3Segment(STRING_TYPE_XDI);
 
-	private XriResolver xriResolver;
+	private AbstractProxy proxy;
 
 	@Override
 	public void init() throws Exception {
 
 		super.init();
-
-		if (this.xriResolver == null) this.xriResolver = new XriResolver();
 	}
 
 	@Override
@@ -43,14 +47,14 @@ public class XriNetMessagingTarget extends AbstractMessagingTarget {
 		return this.addressHandler;
 	}
 
-	public XriResolver getXriResolver() {
+	public AbstractProxy getProxy() {
 
-		return this.xriResolver;
+		return this.proxy;
 	}
 
-	public void setXriResolver(XriResolver xriResolver) {
+	public void setProxy(AbstractProxy proxy) {
 
-		this.xriResolver = xriResolver;
+		this.proxy = proxy;
 	}
 
 	private AddressHandler addressHandler = new AbstractContextHandler() {
@@ -72,17 +76,37 @@ public class XriNetMessagingTarget extends AbstractMessagingTarget {
 
 			// resolve the XRI
 
-			XRI3Segment inumber;
-			String uri;
+			Resolver resolver = XdiProxyMessagingTarget.this.proxy.getResolver();
+
+			ResolverFlags resolverFlags = new ResolverFlags();
+			resolverFlags.setNoDefaultT(true);
+
+			ResolverState resolverState = new ResolverState();
+
+			XRD xrd;
 
 			try {
 
-				XriResolutionResult resolutionResult = XriNetMessagingTarget.this.xriResolver.resolve(xri.toString());
-				inumber = new XRI3Segment(resolutionResult.getInumber());
-				uri = resolutionResult.getXdiUri();
-			} catch (XriResolutionException ex) {
+				xrd = resolver.resolveSEPToXRD(new XRI(xri.toString()), "xri://$xdi!($v!1)", null, resolverFlags, resolverState);
 
-				throw new Xdi2MessagingException("XRI Resolution error: " + ex.getMessage(), ex, null);
+				if ((! Status.SUCCESS.equals(xrd.getStatusCode())) && (! Status.SEP_NOT_FOUND.equals(xrd.getStatusCode()))) {
+
+					throw new Xdi2MessagingException(xrd.getStatus().getValue(), null, executionContext);
+				}
+			} catch (PartialResolutionException ex) {
+
+				throw new Xdi2MessagingException("XRI Resolution error: " + ex.getMessage(), ex, executionContext);
+			}
+
+			// extract inumber and URI
+			
+			XRI3Segment inumber = new XRI3Segment(xrd.getCanonicalID().getValue());
+
+			String uri = null;
+			
+			if (xrd.getNumServices() > 0 && xrd.getServiceAt(0).getNumURIs() > 0) {
+
+				uri = xrd.getServiceAt(0).getURIAt(0).getUriString();
 			}
 
 			// prepare result graph

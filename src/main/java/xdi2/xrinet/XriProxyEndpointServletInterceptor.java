@@ -13,7 +13,7 @@ import xdi2.server.EndpointServlet;
 import xdi2.server.RequestInfo;
 import xdi2.server.interceptor.AbstractEndpointServletInterceptor;
 
-public class OpenXriProxyEndpointServletInterceptor extends AbstractEndpointServletInterceptor {
+public class XriProxyEndpointServletInterceptor extends AbstractEndpointServletInterceptor {
 
 	private Proxy proxy;
 
