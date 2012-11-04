@@ -87,7 +87,7 @@ public class XdiProxyMessagingTarget extends AbstractMessagingTarget {
 
 			try {
 
-				xrd = resolver.resolveSEPToXRD(new XRI(xri.toString()), "xri://$xdi!($v!1)", null, resolverFlags, resolverState);
+				xrd = resolver.resolveSEPToXRD(new XRI(xri.toString()), STRING_TYPE_XDI, null, resolverFlags, resolverState);
 
 				if ((! Status.SUCCESS.equals(xrd.getStatusCode())) && (! Status.SEP_NOT_FOUND.equals(xrd.getStatusCode()))) {
 
