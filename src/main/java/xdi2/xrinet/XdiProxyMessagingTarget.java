@@ -87,24 +87,24 @@ public class XdiProxyMessagingTarget extends AbstractMessagingTarget {
 
 			try {
 
-				xrd = resolver.resolveSEPToXRD(new XRI(xri.toString()), STRING_TYPE_XDI, null, resolverFlags, resolverState);
-
-				if ((! Status.SUCCESS.equals(xrd.getStatusCode())) && (! Status.SEP_NOT_FOUND.equals(xrd.getStatusCode()))) {
-
-					throw new Xdi2MessagingException(xrd.getStatus().getValue(), null, executionContext);
-				}
+				xrd = resolver.resolveSEPToXRD(new XRI(xri.toString()), "xri://$xdi!($v!1)", null, resolverFlags, resolverState);
 			} catch (PartialResolutionException ex) {
 
-				throw new Xdi2MessagingException("XRI Resolution error: " + ex.getMessage(), ex, executionContext);
+				xrd = ex.getPartialXRDS().getFinalXRD();
+			}
+
+			if ((! Status.SUCCESS.equals(xrd.getStatusCode())) && (! Status.SEP_NOT_FOUND.equals(xrd.getStatusCode()))) {
+
+				throw new Xdi2MessagingException(xrd.getStatus().getValue(), null, executionContext);
 			}
 
 			// extract inumber and URI
-			
+
 			XRI3Segment inumber = new XRI3Segment(xrd.getCanonicalID().getValue());
 
 			String uri = null;
-			
-			if (xrd.getNumServices() > 0 && xrd.getServiceAt(0).getNumURIs() > 0) {
+
+			if (Status.SUCCESS.equals(xrd.getStatusCode()) && xrd.getNumServices() > 0 && xrd.getServiceAt(0).getNumURIs() > 0) {
 
 				uri = xrd.getServiceAt(0).getURIAt(0).getUriString();
 			}
