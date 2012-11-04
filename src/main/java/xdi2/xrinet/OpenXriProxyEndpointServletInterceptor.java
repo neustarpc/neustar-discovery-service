@@ -1,4 +1,4 @@
-package xdi2.xri2xdi;
+package xdi2.xrinet;
 
 import java.io.IOException;
 
@@ -6,19 +6,32 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.openxri.proxy.Proxy;
+
 import xdi2.messaging.target.MessagingTarget;
 import xdi2.server.EndpointServlet;
 import xdi2.server.RequestInfo;
 import xdi2.server.interceptor.AbstractEndpointServletInterceptor;
 
-public class GetEmptyPathEndpointServletInterceptor extends AbstractEndpointServletInterceptor {
+public class OpenXriProxyEndpointServletInterceptor extends AbstractEndpointServletInterceptor {
+
+	private Proxy proxy;
 
 	@Override
 	public boolean processGetRequest(EndpointServlet endpointServlet, HttpServletRequest request, HttpServletResponse response, RequestInfo requestInfo, MessagingTarget messagingTarget) throws ServletException, IOException {
 
-		if (! requestInfo.getRequestPath().equals("/")) return false;
+		this.getProxy().process(request, response);
 
-		response.sendRedirect("/index.html");
 		return true;
+	}
+
+	public Proxy getProxy() {
+
+		return this.proxy;
+	}
+
+	public void setProxy(Proxy proxy) {
+
+		this.proxy = proxy;
 	}
 }

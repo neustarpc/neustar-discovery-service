@@ -1,4 +1,4 @@
-package xdi2.xri2xdi;
+package xdi2.xrinet;
 
 import xdi2.core.ContextNode;
 import xdi2.core.Graph;
@@ -17,11 +17,11 @@ import xdi2.messaging.target.AbstractContextHandler;
 import xdi2.messaging.target.AbstractMessagingTarget;
 import xdi2.messaging.target.AddressHandler;
 import xdi2.messaging.target.ExecutionContext;
-import xdi2.xri2xdi.resolution.XriResolutionException;
-import xdi2.xri2xdi.resolution.XriResolutionResult;
-import xdi2.xri2xdi.resolution.XriResolver;
+import xdi2.xrinet.resolution.XriResolutionException;
+import xdi2.xrinet.resolution.XriResolutionResult;
+import xdi2.xrinet.resolution.XriResolver;
 
-public class Xri2XdiMessagingTarget extends AbstractMessagingTarget {
+public class XriNetMessagingTarget extends AbstractMessagingTarget {
 
 	public static final String XRI_URI = "$uri";
 	public static final String STRING_TYPE_XDI = "$xdi$*($v)$!1";
@@ -77,7 +77,7 @@ public class Xri2XdiMessagingTarget extends AbstractMessagingTarget {
 
 			try {
 
-				XriResolutionResult resolutionResult = Xri2XdiMessagingTarget.this.xriResolver.resolve(xri.toString());
+				XriResolutionResult resolutionResult = XriNetMessagingTarget.this.xriResolver.resolve(xri.toString());
 				inumber = new XRI3Segment(resolutionResult.getInumber());
 				uri = resolutionResult.getXdiUri();
 			} catch (XriResolutionException ex) {

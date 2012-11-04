@@ -14,7 +14,9 @@
 	<bean id="EndpointServlet" class="xdi2.server.EndpointServlet" init-method="init" destroy-method="destroy">
 		<property name="interceptors">
 			<util:list>
-				<bean class="xdi2.xrinet.XriNetEndpointServletInterceptor" />
+				<bean class="xdi2.xrinet.OpenXriProxyEndpointServletInterceptor">
+					<property name="proxy" ref="Proxy" />
+				</bean>
 			</util:list>
 		</property>
 	</bean>
@@ -31,9 +33,9 @@
 
 	<!-- Set up a Xri2XdiMessagingTarget -->
 
-	<bean name="xriResolver" class="xdi2.xri2xdi.resolution.XriResolver" />
+	<bean name="xriResolver" class="xdi2.xrinet.resolution.XriResolver" />
 
-	<bean name="/" class="xdi2.xri2xdi.Xri2XdiMessagingTarget">
+	<bean name="/" class="xdi2.xrinet.XriNetMessagingTarget">
 		<property name="xriResolver" ref="xriResolver" />
 	</bean>
 

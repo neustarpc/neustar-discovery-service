@@ -1,4 +1,4 @@
-package xdi2.xri2xdi.resolution;
+package xdi2.xrinet.resolution;
 
 public class XriResolutionException extends Exception {
 
