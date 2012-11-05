@@ -1,11 +1,16 @@
 package xdi2.xrinet;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.openxri.XRI;
 import org.openxri.proxy.impl.AbstractProxy;
 import org.openxri.resolve.Resolver;
 import org.openxri.resolve.ResolverFlags;
 import org.openxri.resolve.ResolverState;
 import org.openxri.resolve.exception.PartialResolutionException;
+import org.openxri.util.PrioritizedList;
+import org.openxri.xml.Service;
 import org.openxri.xml.Status;
 import org.openxri.xml.XRD;
 
@@ -101,12 +106,22 @@ public class XdiProxyMessagingTarget extends AbstractMessagingTarget {
 			// extract inumber and URI
 
 			XRI3Segment inumber = new XRI3Segment(xrd.getCanonicalID().getValue());
+			List<String> uris = new ArrayList<String> ();
 
-			String uri = null;
+			PrioritizedList selectedServicesPrioritizedList = xrd.getSelectedServices();
+			ArrayList<?> selectedServices = selectedServicesPrioritizedList == null ? null : selectedServicesPrioritizedList.getList();
 
-			if (Status.SUCCESS.equals(xrd.getStatusCode()) && xrd.getNumServices() > 0 && xrd.getServiceAt(0).getNumURIs() > 0) {
+			if (selectedServices != null) {
 
-				uri = xrd.getServiceAt(0).getURIAt(0).getUriString();
+				for (int i=0; i<selectedServices.size(); i++) {
+
+					Service selectedService = (Service) selectedServices.get(i);
+
+					for (int ii=0; ii<selectedService.getNumURIs(); ii++) {
+
+						uris.add(selectedService.getURIAt(ii).getUriString());
+					}
+				}
 			}
 
 			// prepare result graph
@@ -123,11 +138,11 @@ public class XdiProxyMessagingTarget extends AbstractMessagingTarget {
 
 			// add URIs
 
-			if (uri != null) {
+			if (uris.size() > 0) {
 
 				XdiAttributeSingleton uriAttributeSingleton = XdiSubGraph.fromContextNode(inumberRemoteRootContextNode).getAttributeSingleton(new XRI3SubSegment(XRI_URI), true);
 				Dictionary.addContextNodeType(uriAttributeSingleton.getContextNode(), XRI_TYPE_XDI);
-				uriAttributeSingleton.getContextNode().createLiteral(uri);
+				uriAttributeSingleton.getContextNode().createLiteral(uris.get(0));
 			}
 
 			// add I-Number and original XRI
