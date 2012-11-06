@@ -31,7 +31,7 @@
 		<constructor-arg><util:properties location="/WEB-INF/proxy.properties" /></constructor-arg>
 	</bean>
 
-	<!-- Set up a Xri2XdiMessagingTarget -->
+	<!-- Set up the XdiProxyMessagingTarget -->
 
 	<bean name="/" class="xdi2.xrinet.XdiProxyMessagingTarget">
 		<property name="proxy" ref="Proxy" />
