@@ -22,8 +22,8 @@ import xdi2.core.features.dictionary.Dictionary;
 import xdi2.core.features.multiplicity.XdiAttributeSingleton;
 import xdi2.core.features.multiplicity.XdiSubGraph;
 import xdi2.core.features.remoteroots.RemoteRoots;
-import xdi2.core.xri3.impl.XRI3Segment;
-import xdi2.core.xri3.impl.XRI3SubSegment;
+import xdi2.core.xri3.impl.XDI3Segment;
+import xdi2.core.xri3.impl.XDI3SubSegment;
 import xdi2.messaging.GetOperation;
 import xdi2.messaging.MessageResult;
 import xdi2.messaging.exceptions.Xdi2MessagingException;
@@ -36,7 +36,7 @@ public class XdiProxyMessagingTarget extends AbstractMessagingTarget {
 
 	public static final String XRI_URI = "$uri";
 	public static final String STRING_TYPE_XDI = "$xdi$*($v)$!1";
-	public static final XRI3Segment XRI_TYPE_XDI = new XRI3Segment(STRING_TYPE_XDI);
+	public static final XDI3Segment XRI_TYPE_XDI = new XDI3Segment(STRING_TYPE_XDI);
 
 	private AbstractProxy proxy;
 
@@ -47,7 +47,7 @@ public class XdiProxyMessagingTarget extends AbstractMessagingTarget {
 	}
 
 	@Override
-	public AddressHandler getAddressHandler(XRI3Segment address) throws Xdi2MessagingException {
+	public AddressHandler getAddressHandler(XDI3Segment address) throws Xdi2MessagingException {
 
 		return this.addressHandler;
 	}
@@ -65,11 +65,11 @@ public class XdiProxyMessagingTarget extends AbstractMessagingTarget {
 	private AddressHandler addressHandler = new AbstractContextHandler() {
 
 		@Override
-		public void getContext(XRI3Segment targetAddress, GetOperation operation, MessageResult messageResult, ExecutionContext executionContext) throws Xdi2MessagingException {
+		public void getContext(XDI3Segment targetAddress, GetOperation operation, MessageResult messageResult, ExecutionContext executionContext) throws Xdi2MessagingException {
 
 			// is this a remote root context XRI?
 
-			XRI3Segment xri;
+			XDI3Segment xri;
 
 			if (RemoteRoots.isRemoteRootXri(targetAddress)) {
 
@@ -105,7 +105,7 @@ public class XdiProxyMessagingTarget extends AbstractMessagingTarget {
 
 			// extract inumber and URI
 
-			XRI3Segment inumber = new XRI3Segment(xrd.getCanonicalID().getValue());
+			XDI3Segment inumber = new XDI3Segment(xrd.getCanonicalID().getValue());
 			List<String> uris = new ArrayList<String> ();
 
 			PrioritizedList selectedServicesPrioritizedList = xrd.getSelectedServices();
@@ -140,7 +140,7 @@ public class XdiProxyMessagingTarget extends AbstractMessagingTarget {
 
 			if (uris.size() > 0) {
 
-				XdiAttributeSingleton uriAttributeSingleton = XdiSubGraph.fromContextNode(inumberRemoteRootContextNode).getAttributeSingleton(new XRI3SubSegment(XRI_URI), true);
+				XdiAttributeSingleton uriAttributeSingleton = XdiSubGraph.fromContextNode(inumberRemoteRootContextNode).getAttributeSingleton(new XDI3SubSegment(XRI_URI), true);
 				Dictionary.addContextNodeType(uriAttributeSingleton.getContextNode(), XRI_TYPE_XDI);
 				uriAttributeSingleton.getContextNode().createLiteral(uris.get(0));
 			}
