@@ -3,6 +3,8 @@
 
 This is a combined XRI/XDI discovery proxy service based on the [XDI2](http://github.com/peacekeeper/xdi2) and [OpenXRI](http://openxri.org) libraries.
 
+A public-use deployment of this service is available at http://beta.xri.net/xdi2-xrinet/. It has no web interface, but will accept requests as described below.
+
 ### How to build
 
 First, you need to build the main [XDI2](http://github.com/peacekeeper/xdi2) and [OpenXRI](http://openxri.org) projects.
@@ -72,6 +74,8 @@ HTTP POST response:
 	(=!91F2.8153.F600.AE24)$!($uri)/$is+/$xdi$*($v)$!1
 	=markus/$is/=!91F2.8153.F600.AE24
 	(=!91F2.8153.F600.AE24)$!($uri)/!/(data:,https:%2F%2Fxdi.fullxri.com%2F=!91F2.8153.F600.AE24%2F)
+
+### Public 
 
 ### Community
 
