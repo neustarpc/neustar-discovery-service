@@ -75,8 +75,6 @@ HTTP POST response:
 	=markus/$is/=!91F2.8153.F600.AE24
 	(=!91F2.8153.F600.AE24)$!($uri)/!/(data:,https:%2F%2Fxdi.fullxri.com%2F=!91F2.8153.F600.AE24%2F)
 
-### Public 
-
 ### Community
 
 Google Group: http://groups.google.com/group/xdi2
