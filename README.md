@@ -27,6 +27,7 @@ Then the combined XRI/XDI discovery proxy service is available at
 
 * [Example XRI Resolution](https://github.com/peacekeeper/xdi2-xrinet/wiki/Example-XRI-Resolution)
 * [Example XDI Discovery](https://github.com/peacekeeper/xdi2-xrinet/wiki/Example-XDI-Discovery)
+* [Discovering Additional Information](https://github.com/peacekeeper/xdi2-xrinet/wiki/Discovering-Additional-Information)
 
 ### Community
 
