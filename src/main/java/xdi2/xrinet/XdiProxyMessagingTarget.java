@@ -17,8 +17,8 @@ import org.openxri.xml.XRD;
 import xdi2.core.ContextNode;
 import xdi2.core.Graph;
 import xdi2.core.constants.XDIConstants;
-import xdi2.core.constants.XDIDictionaryConstants;
 import xdi2.core.features.dictionary.Dictionary;
+import xdi2.core.features.equivalence.Equivalence;
 import xdi2.core.features.multiplicity.XdiAttributeSingleton;
 import xdi2.core.features.multiplicity.XdiSubGraph;
 import xdi2.core.features.remoteroots.RemoteRoots;
@@ -152,7 +152,7 @@ public class XdiProxyMessagingTarget extends AbstractMessagingTarget {
 			if (! xri.equals(inumber)) {
 
 				ContextNode xriContextNode = graph.findContextNode(xri, true);
-				xriContextNode.createRelation(XDIDictionaryConstants.XRI_S_IS, inumberContextNode);
+				Equivalence.setReferenceContextNode(xriContextNode, inumberContextNode);
 			}
 		}
 	};
