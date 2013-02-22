@@ -21,9 +21,10 @@ import xdi2.core.constants.XDIDictionaryConstants;
 import xdi2.core.features.dictionary.Dictionary;
 import xdi2.core.features.multiplicity.XdiAttributeSingleton;
 import xdi2.core.features.multiplicity.XdiSubGraph;
-import xdi2.core.features.remoteroots.RemoteRoots;
-import xdi2.core.xri3.impl.XDI3Segment;
-import xdi2.core.xri3.impl.XDI3SubSegment;
+import xdi2.core.features.roots.RemoteRoot;
+import xdi2.core.features.roots.Roots;
+import xdi2.core.xri3.XDI3Segment;
+import xdi2.core.xri3.XDI3SubSegment;
 import xdi2.messaging.GetOperation;
 import xdi2.messaging.MessageResult;
 import xdi2.messaging.exceptions.Xdi2MessagingException;
@@ -36,7 +37,7 @@ public class XdiProxyMessagingTarget extends AbstractMessagingTarget {
 
 	public static final String XRI_URI = "$uri";
 	public static final String STRING_TYPE_XDI = "$xdi$*($v)$!1";
-	public static final XDI3Segment XRI_TYPE_XDI = new XDI3Segment(STRING_TYPE_XDI);
+	public static final XDI3Segment XRI_TYPE_XDI = XDI3Segment.create(STRING_TYPE_XDI);
 
 	private AbstractProxy proxy;
 
@@ -71,9 +72,9 @@ public class XdiProxyMessagingTarget extends AbstractMessagingTarget {
 
 			XDI3Segment xri;
 
-			if (RemoteRoots.isRemoteRootXri(targetAddress)) {
+			if (RemoteRoot.isRemoteRootXri(targetAddress.getLastSubSegment())) {
 
-				xri = RemoteRoots.xriOfRemoteRootXri(targetAddress);
+				xri = RemoteRoot.getXriOfRemoteRootXri(targetAddress.getLastSubSegment());
 			} else {
 
 				xri = targetAddress;
@@ -105,7 +106,7 @@ public class XdiProxyMessagingTarget extends AbstractMessagingTarget {
 
 			// extract inumber and URI
 
-			XDI3Segment inumber = new XDI3Segment(xrd.getCanonicalID().getValue());
+			XDI3Segment inumber = XDI3Segment.create(xrd.getCanonicalID().getValue());
 			List<String> uris = new ArrayList<String> ();
 
 			PrioritizedList selectedServicesPrioritizedList = xrd.getSelectedServices();
@@ -130,17 +131,17 @@ public class XdiProxyMessagingTarget extends AbstractMessagingTarget {
 
 			// add "self" remote root context nodes
 
-			RemoteRoots.setSelfRemoteRootContextNode(graph, XDIConstants.XRI_S_ROOT);
+			Roots.findLocalRoot(graph).setSelfRemoteRoot(XDIConstants.XRI_S_ROOT);
 
 			// add I-Number remote root context nodes
 
-			ContextNode inumberRemoteRootContextNode = RemoteRoots.findRemoteRootContextNode(graph, inumber, true);
+			ContextNode inumberRemoteRootContextNode = Roots.findLocalRoot(graph).findRemoteRoot(inumber, true).getContextNode();
 
 			// add URIs
 
 			if (uris.size() > 0) {
 
-				XdiAttributeSingleton uriAttributeSingleton = XdiSubGraph.fromContextNode(inumberRemoteRootContextNode).getAttributeSingleton(new XDI3SubSegment(XRI_URI), true);
+				XdiAttributeSingleton uriAttributeSingleton = XdiSubGraph.fromContextNode(inumberRemoteRootContextNode).getAttributeSingleton(XDI3SubSegment.create(XRI_URI), true);
 				Dictionary.addContextNodeType(uriAttributeSingleton.getContextNode(), XRI_TYPE_XDI);
 				uriAttributeSingleton.getContextNode().createLiteral(uris.get(0));
 			}

@@ -21,6 +21,19 @@
 		</property>
 	</bean>
 
+	<!-- SPRING -->
+
+	<bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean">
+		<property name="converters">
+			<list>
+				<bean class="xdi2.server.spring.StringXDI3StatementConverter" />
+				<bean class="xdi2.server.spring.StringXDI3SegmentConverter" />
+				<bean class="xdi2.server.spring.StringXDI3SubSegmentConverter" />
+				<bean class="xdi2.server.spring.StringXDI3XRefConverter" />
+			</list>
+		</property>
+	</bean>
+
 	<!-- Set up the OpenXRI Proxy -->
 
 	<bean id="Proxy" class="org.openxri.proxy.impl.BasicProxy" init-method="init" destroy-method="shutdown">
