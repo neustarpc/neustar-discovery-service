@@ -21,7 +21,7 @@ import xdi2.core.features.dictionary.Dictionary;
 import xdi2.core.features.equivalence.Equivalence;
 import xdi2.core.features.multiplicity.XdiAttributeSingleton;
 import xdi2.core.features.multiplicity.XdiSubGraph;
-import xdi2.core.features.roots.RemoteRoot;
+import xdi2.core.features.roots.PeerRoot;
 import xdi2.core.features.roots.Roots;
 import xdi2.core.xri3.XDI3Segment;
 import xdi2.core.xri3.XDI3SubSegment;
@@ -68,13 +68,13 @@ public class XdiProxyMessagingTarget extends AbstractMessagingTarget {
 		@Override
 		public void getContext(XDI3Segment targetAddress, GetOperation operation, MessageResult messageResult, ExecutionContext executionContext) throws Xdi2MessagingException {
 
-			// is this a remote root context XRI?
+			// is this a peer root context XRI?
 
 			XDI3Segment xri;
 
-			if (RemoteRoot.isRemoteRootXri(targetAddress.getLastSubSegment())) {
+			if (PeerRoot.isPeerRootXri(targetAddress.getLastSubSegment())) {
 
-				xri = RemoteRoot.getXriOfRemoteRootXri(targetAddress.getLastSubSegment());
+				xri = PeerRoot.getXriOfPeerRootXri(targetAddress.getLastSubSegment());
 			} else {
 
 				xri = targetAddress;
@@ -129,19 +129,19 @@ public class XdiProxyMessagingTarget extends AbstractMessagingTarget {
 
 			Graph graph = messageResult.getGraph();
 
-			// add "self" remote root context nodes
+			// add "self" peer root context nodes
 
-			Roots.findLocalRoot(graph).setSelfRemoteRoot(XDIConstants.XRI_S_ROOT);
+			Roots.findLocalRoot(graph).setSelfPeerRoot(XDIConstants.XRI_S_ROOT);
 
-			// add I-Number remote root context nodes
+			// add I-Number peer root context nodes
 
-			ContextNode inumberRemoteRootContextNode = Roots.findLocalRoot(graph).findRemoteRoot(inumber, true).getContextNode();
+			ContextNode inumberPeerRootContextNode = Roots.findLocalRoot(graph).findPeerRoot(inumber, true).getContextNode();
 
 			// add URIs
 
 			if (uris.size() > 0) {
 
-				XdiAttributeSingleton uriAttributeSingleton = XdiSubGraph.fromContextNode(inumberRemoteRootContextNode).getAttributeSingleton(XDI3SubSegment.create(XRI_URI), true);
+				XdiAttributeSingleton uriAttributeSingleton = XdiSubGraph.fromContextNode(inumberPeerRootContextNode).getAttributeSingleton(XDI3SubSegment.create(XRI_URI), true);
 				Dictionary.addContextNodeType(uriAttributeSingleton.getContextNode(), XRI_TYPE_XDI);
 				uriAttributeSingleton.getContextNode().createLiteral(uris.get(0));
 			}
