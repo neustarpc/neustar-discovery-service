@@ -3,20 +3,18 @@
 	xmlns:util="http://www.springframework.org/schema/util" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
 
-	<!-- XDI FILTER -->
+	<!-- XDI ENDPOINT REGISTRY AND TRANSPORT -->
 
-	<bean id="EndpointFilter" class="xdi2.server.EndpointFilter">
-		<property name="endpointServlet" ref="EndpointServlet" />
-	</bean>
+	<bean id="HttpEndpointRegistry" class="xdi2.server.registry.HttpEndpointRegistry" init-method="init" destroy-method="shutdown" />
 
-	<!-- XDI SERVLET -->
-
-	<bean id="EndpointServlet" class="xdi2.server.EndpointServlet" init-method="init" destroy-method="destroy">
+	<bean id="HttpTransport" class="xdi2.server.transport.HttpTransport" init-method="init" destroy-method="shutdown">
+		<property name="httpEndpointRegistry" ref="HttpEndpointRegistry" />
 		<property name="interceptors">
 			<util:list>
-				<bean class="xdi2.xrinet.XriProxyEndpointServletInterceptor">
+				<bean class="xdi2.server.interceptor.impl.DebugHttpTransportInterceptor" />
+				<!-- <bean class="xdi2.xrinet.XdiProxyEndpointServletInterceptor">
 					<property name="proxy" ref="Proxy" />
-				</bean>
+				</bean> -->
 			</util:list>
 		</property>
 	</bean>
@@ -34,20 +32,20 @@
 		</property>
 	</bean>
 
-	<!-- Set up the OpenXRI Proxy -->
+	<!-- OPENXRI PROXY -->
 
-	<bean id="Proxy" class="org.openxri.proxy.impl.BasicProxy" init-method="init" destroy-method="shutdown">
-		<constructor-arg><ref bean="ProxyConfig" /></constructor-arg> 
+	<bean id="proxy" class="org.openxri.proxy.impl.BasicProxy" init-method="init" destroy-method="shutdown">
+		<constructor-arg><ref bean="proxyConfig" /></constructor-arg> 
 	</bean>
 	
-	<bean id="ProxyConfig" class="org.openxri.config.impl.PropertiesProxyConfig">
+	<bean id="proxyConfig" class="org.openxri.config.impl.PropertiesProxyConfig">
 		<constructor-arg><util:properties location="/WEB-INF/proxy.properties" /></constructor-arg>
 	</bean>
 
-	<!-- Set up the XdiProxyMessagingTarget -->
+	<!-- XDI PROXY MESSAGING TARGET -->
 
 	<bean name="/" class="xdi2.xrinet.XdiProxyMessagingTarget">
-		<property name="proxy" ref="Proxy" />
+		<property name="proxy" ref="proxy" />
 	</bean>
 
 </beans>
