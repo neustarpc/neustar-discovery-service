@@ -25,7 +25,6 @@ import org.slf4j.LoggerFactory;
 
 import xdi2.core.ContextNode;
 import xdi2.core.Graph;
-import xdi2.core.constants.XDIConstants;
 import xdi2.core.features.equivalence.Equivalence;
 import xdi2.core.features.nodetypes.XdiAbstractInstanceUnordered;
 import xdi2.core.features.nodetypes.XdiAttributeClass;
@@ -48,9 +47,8 @@ public class XdiProxyMessagingTarget extends AbstractMessagingTarget {
 
 	private static final Logger log = LoggerFactory.getLogger(XdiProxyMessagingTarget.class);
 
+	public static final XDI3Segment XRI_SELF = XDI3Segment.create("=");
 	public static final XDI3SubSegment XRI_URI = XDI3SubSegment.create("$uri");
-	public static final String STRING_TYPE_XDI = "$xdi";
-	public static final XDI3Segment XRI_TYPE_XDI = XDI3Segment.create(STRING_TYPE_XDI);
 
 	private AbstractProxy proxy;
 
@@ -119,11 +117,11 @@ public class XdiProxyMessagingTarget extends AbstractMessagingTarget {
 				throw new Xdi2MessagingException(xrd.getStatus().getValue(), null, executionContext);
 			}
 
-			// extract cloudnumber
+			// extract cloud number
 
-			XDI3Segment cloudnumber = XRI2Util.canonicalIdToCloudnumber(xrd.getCanonicalID().getValue());
+			XDI3Segment cloudNumber = XRI2Util.canonicalIdToCloudNumber(xrd.getCanonicalID().getValue());
 
-			if (log.isDebugEnabled()) log.debug("Cloudnumber: " + cloudnumber);
+			if (log.isDebugEnabled()) log.debug("Cloud Number: " + cloudNumber);
 
 			// extract URIs
 
@@ -156,7 +154,7 @@ public class XdiProxyMessagingTarget extends AbstractMessagingTarget {
 
 							Integer priority1 = ((SEPUri) uri1).getPriority();
 							Integer priority2 = ((SEPUri) uri2).getPriority();
-							
+
 							if (priority1 == null && priority2 == null) return 0;
 							if (priority1 == null && priority2 != null) return 1;
 							if (priority1 != null && priority2 == null) return -1;
@@ -194,15 +192,15 @@ public class XdiProxyMessagingTarget extends AbstractMessagingTarget {
 
 			// add "self" peer root
 
-			XdiLocalRoot.findLocalRoot(graph).setSelfPeerRoot(XDIConstants.XRI_S_ROOT);
+			XdiLocalRoot.findLocalRoot(graph).setSelfPeerRoot(XRI_SELF);
 
-			// add cloudnumber peer root
+			// add cloud number peer root
 
-			XdiPeerRoot cloudnumberXdiPeerRoot = XdiLocalRoot.findLocalRoot(graph).findPeerRoot(cloudnumber, true);
+			XdiPeerRoot cloudNumberXdiPeerRoot = XdiLocalRoot.findLocalRoot(graph).findPeerRoot(cloudNumber, true);
 
 			// add all URIs for all types
 
-			XdiAttributeClass uriXdiAttributeClass = cloudnumberXdiPeerRoot.getXdiAttributeClass(XRI_URI, true);
+			XdiAttributeClass uriXdiAttributeClass = cloudNumberXdiPeerRoot.getXdiAttributeClass(XRI_URI, true);
 
 			for (Entry<String, List<String>> uriMapEntry : uriMap.entrySet()) {
 
@@ -218,7 +216,7 @@ public class XdiProxyMessagingTarget extends AbstractMessagingTarget {
 					XdiAttributeInstance uriXdiAttributeInstance = uriXdiAttributeClass.setXdiInstanceUnordered(uriXdiInstanceUnorderedArcXri);
 					uriXdiAttributeInstance.getXdiValue(true).getContextNode().setLiteral(uri);
 
-					XdiAttributeClass typeXdiAttributeClass = cloudnumberXdiPeerRoot.getXdiEntitySingleton(typeXdiEntitySingletonArcXri, true).getXdiAttributeClass(XRI_URI, true);
+					XdiAttributeClass typeXdiAttributeClass = cloudNumberXdiPeerRoot.getXdiEntitySingleton(typeXdiEntitySingletonArcXri, true).getXdiAttributeClass(XRI_URI, true);
 					XdiAttributeInstance typeXdiAttributeInstance = typeXdiAttributeClass.setXdiInstanceOrdered(-1);
 					Equivalence.setReferenceContextNode(typeXdiAttributeInstance.getContextNode(), uriXdiAttributeInstance.getContextNode());
 				}
@@ -232,7 +230,7 @@ public class XdiProxyMessagingTarget extends AbstractMessagingTarget {
 					XDI3SubSegment defaultUriForTypeXdiInstanceUnorderedArcXri = XdiAbstractInstanceUnordered.createArcXriFromHash(defaultUriForType, false);
 
 					XdiAttributeInstance defaultUriForTypeXdiAttributeInstance = uriXdiAttributeClass.setXdiInstanceUnordered(defaultUriForTypeXdiInstanceUnorderedArcXri);
-					XdiAttributeSingleton defaultUriForTypeXdiAttributeSingleton = cloudnumberXdiPeerRoot.getXdiEntitySingleton(typeXdiEntitySingletonArcXri, true).getXdiAttributeSingleton(XRI_URI, true);
+					XdiAttributeSingleton defaultUriForTypeXdiAttributeSingleton = cloudNumberXdiPeerRoot.getXdiEntitySingleton(typeXdiEntitySingletonArcXri, true).getXdiAttributeSingleton(XRI_URI, true);
 					Equivalence.setReferenceContextNode(defaultUriForTypeXdiAttributeSingleton.getContextNode(), defaultUriForTypeXdiAttributeInstance.getContextNode());
 				}
 			}
@@ -242,17 +240,17 @@ public class XdiProxyMessagingTarget extends AbstractMessagingTarget {
 			XDI3SubSegment defaultUriXdiInstanceUnorderedArcXri = XdiAbstractInstanceUnordered.createArcXriFromHash(defaultUri, false);
 
 			XdiAttributeInstance defaultUriXdiAttributeInstance = uriXdiAttributeClass.setXdiInstanceUnordered(defaultUriXdiInstanceUnorderedArcXri);
-			XdiAttributeSingleton defaultUriXdiAttributeSingleton = cloudnumberXdiPeerRoot.getXdiAttributeSingleton(XRI_URI, true);
+			XdiAttributeSingleton defaultUriXdiAttributeSingleton = cloudNumberXdiPeerRoot.getXdiAttributeSingleton(XRI_URI, true);
 			Equivalence.setReferenceContextNode(defaultUriXdiAttributeSingleton.getContextNode(), defaultUriXdiAttributeInstance.getContextNode());
 
-			// add cloudnumber and original XRI
+			// add cloud number and original XRI
 
-			ContextNode cloudnumberContextNode = graph.setDeepContextNode(cloudnumber);
+			ContextNode cloudNumberContextNode = graph.setDeepContextNode(cloudNumber);
 
-			if (! xri.equals(cloudnumber)) {
+			if (! xri.equals(cloudNumber)) {
 
 				ContextNode xriContextNode = graph.setDeepContextNode(xri);
-				Equivalence.setReferenceContextNode(xriContextNode, cloudnumberContextNode);
+				Equivalence.setReferenceContextNode(xriContextNode, cloudNumberContextNode);
 			}
 		}
 	};
