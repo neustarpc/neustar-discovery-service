@@ -1,8 +1,8 @@
 package xdi2.xrinet;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +14,7 @@ import org.openxri.resolve.Resolver;
 import org.openxri.resolve.ResolverFlags;
 import org.openxri.resolve.ResolverState;
 import org.openxri.resolve.exception.PartialResolutionException;
+import org.openxri.util.PrioritizedList;
 import org.openxri.xml.SEPType;
 import org.openxri.xml.SEPUri;
 import org.openxri.xml.Service;
@@ -26,11 +27,13 @@ import xdi2.core.ContextNode;
 import xdi2.core.Graph;
 import xdi2.core.constants.XDIConstants;
 import xdi2.core.features.equivalence.Equivalence;
+import xdi2.core.features.nodetypes.XdiAbstractInstanceUnordered;
 import xdi2.core.features.nodetypes.XdiAttributeClass;
 import xdi2.core.features.nodetypes.XdiAttributeInstance;
+import xdi2.core.features.nodetypes.XdiAttributeSingleton;
 import xdi2.core.features.roots.XdiLocalRoot;
 import xdi2.core.features.roots.XdiPeerRoot;
-import xdi2.core.util.XDI3Util;
+import xdi2.core.util.XRI2Util;
 import xdi2.core.xri3.XDI3Segment;
 import xdi2.core.xri3.XDI3SubSegment;
 import xdi2.messaging.GetOperation;
@@ -92,6 +95,8 @@ public class XdiProxyMessagingTarget extends AbstractMessagingTarget {
 
 			// resolve the XRI
 
+			if (log.isDebugEnabled()) log.debug("Resolving " + xri);
+
 			Resolver resolver = XdiProxyMessagingTarget.this.proxy.getResolver();
 
 			ResolverFlags resolverFlags = new ResolverFlags();
@@ -107,6 +112,8 @@ public class XdiProxyMessagingTarget extends AbstractMessagingTarget {
 				xrd = ex.getPartialXRDS().getFinalXRD();
 			}
 
+			if (log.isDebugEnabled()) log.debug("XRD Status: " + xrd.getStatus().getCode());
+
 			if ((! Status.SUCCESS.equals(xrd.getStatusCode())) && (! Status.SEP_NOT_FOUND.equals(xrd.getStatusCode()))) {
 
 				throw new Xdi2MessagingException(xrd.getStatus().getValue(), null, executionContext);
@@ -114,9 +121,11 @@ public class XdiProxyMessagingTarget extends AbstractMessagingTarget {
 
 			// extract cloudnumber
 
-			XDI3Segment cloudnumber = XDI3Util.canonicalIdToCloudnumber(xrd.getCanonicalID().getValue());
+			XDI3Segment cloudnumber = XRI2Util.canonicalIdToCloudnumber(xrd.getCanonicalID().getValue());
 
-			// extract URIS
+			if (log.isDebugEnabled()) log.debug("Cloudnumber: " + cloudnumber);
+
+			// extract URIs
 
 			Map<String, List<String>> uriMap = new HashMap<String, List<String>> ();
 
@@ -128,6 +137,7 @@ public class XdiProxyMessagingTarget extends AbstractMessagingTarget {
 				for (int ii=0; ii<service.getNumTypes(); ii++) {
 
 					SEPType type = service.getTypeAt(ii);
+					if (type == null || type.getType() == null || type.getType().trim().isEmpty()) continue;
 
 					List<String> uriList = uriMap.get(type.getType());
 
@@ -137,14 +147,46 @@ public class XdiProxyMessagingTarget extends AbstractMessagingTarget {
 						uriMap.put(type.getType(), uriList);
 					}
 
-					for (int iii = 0; iii<service.getNumURIs(); iii++) {
+					List<?> uris = service.getURIs();
+					Collections.sort(uris, new Comparator<Object> () {
 
-						SEPUri uri = service.getURIAt(iii);
+						@SuppressWarnings("null")
+						@Override
+						public int compare(Object uri1, Object uri2) {
+
+							Integer priority1 = ((SEPUri) uri1).getPriority();
+							Integer priority2 = ((SEPUri) uri2).getPriority();
+							
+							if (priority1 == null && priority2 == null) return 0;
+							if (priority1 == null && priority2 != null) return 1;
+							if (priority1 != null && priority2 == null) return -1;
+
+							if (priority1.intValue() == priority2.intValue()) return 0;
+
+							return priority1.intValue() > priority2.intValue() ? 1 : -1;
+						}
+					});
+
+					for (int iii = 0; iii<uris.size(); iii++) {
+
+						SEPUri uri = (SEPUri) uris.get(iii);
+						if (uri == null || uri.getUriString() == null || uri.getUriString().trim().isEmpty()) continue;
 
 						uriList.add(uri.getUriString());
 					}
 				}
 			}
+
+			if (log.isDebugEnabled()) log.debug("URIs: " + uriMap);
+
+			// extract default URI
+
+			PrioritizedList defaultUriPrioritizedList = xrd.getSelectedServices();
+			ArrayList<?> defaultUriList = defaultUriPrioritizedList == null ? null : defaultUriPrioritizedList.getList();
+			Service defaultUriService = defaultUriList == null ? null : (Service) defaultUriList.get(0);
+			String defaultUri = defaultUriService == null ? null : defaultUriService.getURIAt(0).getUriString();
+
+			if (log.isDebugEnabled()) log.debug("Default URI: " + defaultUri);
 
 			// prepare result graph
 
@@ -156,27 +198,52 @@ public class XdiProxyMessagingTarget extends AbstractMessagingTarget {
 
 			// add cloudnumber peer root
 
-			XdiLocalRoot.findLocalRoot(graph).findPeerRoot(cloudnumber, true);
+			XdiPeerRoot cloudnumberXdiPeerRoot = XdiLocalRoot.findLocalRoot(graph).findPeerRoot(cloudnumber, true);
 
-			// add URIs
+			// add all URIs for all types
 
-			XdiAttributeClass uriXdiAttributeClass = XdiLocalRoot.findLocalRoot(graph).getXdiAttributeClass(XRI_URI, true);
+			XdiAttributeClass uriXdiAttributeClass = cloudnumberXdiPeerRoot.getXdiAttributeClass(XRI_URI, true);
 
 			for (Entry<String, List<String>> uriMapEntry : uriMap.entrySet()) {
 
 				String type = uriMapEntry.getKey();
 				List<String> uriList = uriMapEntry.getValue();
 
+				XDI3SubSegment typeXdiEntitySingletonArcXri = XRI2Util.typeToXdiEntitySingletonArcXri(type);
+
 				for (String uri : uriList) {
 
-					XdiAttributeInstance uriXdiAttributeInstance = uriXdiAttributeClass.setXdiInstanceUnordered(null);
+					XDI3SubSegment uriXdiInstanceUnorderedArcXri = XdiAbstractInstanceUnordered.createArcXriFromHash(uri, false);
+
+					XdiAttributeInstance uriXdiAttributeInstance = uriXdiAttributeClass.setXdiInstanceUnordered(uriXdiInstanceUnorderedArcXri);
 					uriXdiAttributeInstance.getXdiValue(true).getContextNode().setLiteral(uri);
 
-					XdiAttributeClass typeXdiAttributeClass = XdiLocalRoot.findLocalRoot(graph).getXdiEntitySingleton(typeToSubSegment(type), true).getXdiAttributeClass(XRI_URI, true);
+					XdiAttributeClass typeXdiAttributeClass = cloudnumberXdiPeerRoot.getXdiEntitySingleton(typeXdiEntitySingletonArcXri, true).getXdiAttributeClass(XRI_URI, true);
 					XdiAttributeInstance typeXdiAttributeInstance = typeXdiAttributeClass.setXdiInstanceOrdered(-1);
 					Equivalence.setReferenceContextNode(typeXdiAttributeInstance.getContextNode(), uriXdiAttributeInstance.getContextNode());
 				}
+
+				// add default URI for this type
+
+				if (uriList.size() > 0) {
+
+					String defaultUriForType = uriList.get(0);
+
+					XDI3SubSegment defaultUriForTypeXdiInstanceUnorderedArcXri = XdiAbstractInstanceUnordered.createArcXriFromHash(defaultUriForType, false);
+
+					XdiAttributeInstance defaultUriForTypeXdiAttributeInstance = uriXdiAttributeClass.setXdiInstanceUnordered(defaultUriForTypeXdiInstanceUnorderedArcXri);
+					XdiAttributeSingleton defaultUriForTypeXdiAttributeSingleton = cloudnumberXdiPeerRoot.getXdiEntitySingleton(typeXdiEntitySingletonArcXri, true).getXdiAttributeSingleton(XRI_URI, true);
+					Equivalence.setReferenceContextNode(defaultUriForTypeXdiAttributeSingleton.getContextNode(), defaultUriForTypeXdiAttributeInstance.getContextNode());
+				}
 			}
+
+			// add default URI
+
+			XDI3SubSegment defaultUriXdiInstanceUnorderedArcXri = XdiAbstractInstanceUnordered.createArcXriFromHash(defaultUri, false);
+
+			XdiAttributeInstance defaultUriXdiAttributeInstance = uriXdiAttributeClass.setXdiInstanceUnordered(defaultUriXdiInstanceUnorderedArcXri);
+			XdiAttributeSingleton defaultUriXdiAttributeSingleton = cloudnumberXdiPeerRoot.getXdiAttributeSingleton(XRI_URI, true);
+			Equivalence.setReferenceContextNode(defaultUriXdiAttributeSingleton.getContextNode(), defaultUriXdiAttributeInstance.getContextNode());
 
 			// add cloudnumber and original XRI
 
@@ -189,23 +256,4 @@ public class XdiProxyMessagingTarget extends AbstractMessagingTarget {
 			}
 		}
 	};
-
-	private static XDI3SubSegment typeToSubSegment(String type) {
-
-		log.info(type);
-		
-		try {
-
-			return XDI3SubSegment.create(type);
-		} catch (Exception ex) {
-
-			try {
-
-				return XDI3SubSegment.create("(" + URLEncoder.encode(type, "UTF-8") + ")");
-			} catch (UnsupportedEncodingException ex2) {
-
-				return null;
-			}
-		}
-	}
 }
