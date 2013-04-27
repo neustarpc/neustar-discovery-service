@@ -237,11 +237,14 @@ public class XdiProxyMessagingTarget extends AbstractMessagingTarget {
 
 			// add default URI
 
-			XDI3SubSegment defaultUriXdiInstanceUnorderedArcXri = XdiAbstractInstanceUnordered.createArcXriFromHash(defaultUri, false);
+			if (defaultUri != null) {
 
-			XdiAttributeInstance defaultUriXdiAttributeInstance = uriXdiAttributeClass.setXdiInstanceUnordered(defaultUriXdiInstanceUnorderedArcXri);
-			XdiAttributeSingleton defaultUriXdiAttributeSingleton = cloudNumberXdiPeerRoot.getXdiAttributeSingleton(XRI_URI, true);
-			Equivalence.setReferenceContextNode(defaultUriXdiAttributeSingleton.getContextNode(), defaultUriXdiAttributeInstance.getContextNode());
+				XDI3SubSegment defaultUriXdiInstanceUnorderedArcXri = XdiAbstractInstanceUnordered.createArcXriFromHash(defaultUri, false);
+
+				XdiAttributeInstance defaultUriXdiAttributeInstance = uriXdiAttributeClass.setXdiInstanceUnordered(defaultUriXdiInstanceUnorderedArcXri);
+				XdiAttributeSingleton defaultUriXdiAttributeSingleton = cloudNumberXdiPeerRoot.getXdiAttributeSingleton(XRI_URI, true);
+				Equivalence.setReferenceContextNode(defaultUriXdiAttributeSingleton.getContextNode(), defaultUriXdiAttributeInstance.getContextNode());
+			}
 
 			// add cloud number and original XRI
 
