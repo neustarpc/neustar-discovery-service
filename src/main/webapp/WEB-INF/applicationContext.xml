@@ -12,9 +12,9 @@
 		<property name="interceptors">
 			<util:list>
 				<bean class="xdi2.server.interceptor.impl.DebugHttpTransportInterceptor" />
-				<bean class="xdi2.xrinet.XdiProxyHttpTransportInterceptor">
+<!-- 				<bean class="xdi2.xrinet.XdiProxyHttpTransportInterceptor">
 					<property name="proxy" ref="proxy" />
-				</bean>
+				</bean> -->
 			</util:list>
 		</property>
 	</bean>
