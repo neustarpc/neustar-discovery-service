@@ -114,7 +114,7 @@ public class XdiProxyMessagingTarget extends AbstractMessagingTarget {
 
 			if ((! Status.SUCCESS.equals(xrd.getStatusCode())) && (! Status.SEP_NOT_FOUND.equals(xrd.getStatusCode()))) {
 
-				throw new Xdi2MessagingException(xrd.getStatus().getValue(), null, executionContext);
+				throw new Xdi2MessagingException("XRI Resolution 2.0 Problem: " + xrd.getStatusCode() + "(" + xrd.getStatus().getValue() + ")", null, executionContext);
 			}
 
 			// extract cloud number
