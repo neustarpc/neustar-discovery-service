@@ -181,7 +181,7 @@ public class XdiProxyMessagingTarget extends AbstractMessagingTarget {
 
 			PrioritizedList defaultUriPrioritizedList = xrd.getSelectedServices();
 			ArrayList<?> defaultUriList = defaultUriPrioritizedList == null ? null : defaultUriPrioritizedList.getList();
-			Service defaultUriService = defaultUriList == null ? null : (Service) defaultUriList.get(0);
+			Service defaultUriService = defaultUriList == null || defaultUriList.size() < 1 ? null : (Service) defaultUriList.get(0);
 			String defaultUri = defaultUriService == null ? null : defaultUriService.getURIAt(0).getUriString();
 
 			if (log.isDebugEnabled()) log.debug("Default URI: " + defaultUri);
