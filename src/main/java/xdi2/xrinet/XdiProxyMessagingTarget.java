@@ -23,7 +23,6 @@ import org.openxri.xml.XRD;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import xdi2.core.ContextNode;
 import xdi2.core.Graph;
 import xdi2.core.features.equivalence.Equivalence;
 import xdi2.core.features.nodetypes.XdiAbstractInstanceUnordered;
@@ -246,14 +245,13 @@ public class XdiProxyMessagingTarget extends AbstractMessagingTarget {
 				Equivalence.setReferenceContextNode(defaultUriXdiAttributeSingleton.getContextNode(), defaultUriXdiAttributeInstance.getContextNode());
 			}
 
-			// add cloud number and original XRI
-
-			ContextNode cloudNumberContextNode = graph.setDeepContextNode(cloudNumber);
+			// add original peer root
 
 			if (! xri.equals(cloudNumber)) {
 
-				ContextNode xriContextNode = graph.setDeepContextNode(xri);
-				Equivalence.setReferenceContextNode(xriContextNode, cloudNumberContextNode);
+				XdiPeerRoot xriXdiPeerRoot = XdiLocalRoot.findLocalRoot(graph).findPeerRoot(xri, true);
+
+				Equivalence.setReferenceContextNode(xriXdiPeerRoot.getContextNode(), cloudNumberXdiPeerRoot.getContextNode());
 			}
 		}
 	};
