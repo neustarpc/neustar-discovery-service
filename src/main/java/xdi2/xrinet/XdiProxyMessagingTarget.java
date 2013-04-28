@@ -46,7 +46,7 @@ public class XdiProxyMessagingTarget extends AbstractMessagingTarget {
 
 	private static final Logger log = LoggerFactory.getLogger(XdiProxyMessagingTarget.class);
 
-	public static final XDI3Segment XRI_SELF = XDI3Segment.create("=");
+	public static final XDI3Segment XRI_SELF = XDI3Segment.create("[=]");
 	public static final XDI3SubSegment XRI_URI = XDI3SubSegment.create("$uri");
 
 	private AbstractProxy proxy;
