@@ -90,6 +90,9 @@ public class XdiProxyMessagingTarget extends AbstractMessagingTarget {
 				xri = targetAddress;
 			}
 
+			String canonicalId = XRI2Util.cloudNumberToCanonicalId(xri);
+			if (canonicalId != null) xri = XDI3Segment.create(canonicalId);
+			
 			// resolve the XRI
 
 			if (log.isDebugEnabled()) log.debug("Resolving " + xri);
