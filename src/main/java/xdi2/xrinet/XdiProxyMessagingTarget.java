@@ -213,7 +213,7 @@ public class XdiProxyMessagingTarget extends AbstractMessagingTarget {
 
 				for (String uri : uriList) {
 
-					XDI3SubSegment uriXdiInstanceUnorderedArcXri = XdiAbstractInstanceUnordered.createArcXriFromHash(uri, true);
+					XDI3SubSegment uriXdiInstanceUnorderedArcXri = XdiAbstractInstanceUnordered.createArcXriFromHash(uri, false);
 
 					XdiAttributeInstance uriXdiAttributeInstance = uriXdiAttributeClass.setXdiInstanceUnordered(uriXdiInstanceUnorderedArcXri);
 					uriXdiAttributeInstance.getXdiValue(true).getContextNode().setLiteral(uri);
