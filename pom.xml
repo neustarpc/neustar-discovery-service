@@ -23,7 +23,7 @@
 	<scm>
 		<url>https://github.com/projectdanube/xdi2-xrinet</url>
 		<connection>scm:git:git://github.com/projectdanube/xdi2-xrinet.git</connection>
-		<developerConnection>scm:git:git@github.com:peacekeeper/xdi2-xrinet.git</developerConnection>
+		<developerConnection>scm:git:git@github.com:projectdanube/xdi2-xrinet.git</developerConnection>
 	</scm>
 
 	<properties>
