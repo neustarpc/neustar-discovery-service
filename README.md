@@ -27,7 +27,6 @@ Then the combined XRI/XDI discovery proxy service is available at
 
 * [Example XRI Resolution](https://github.com/projectdanube/xdi2-xrinet/wiki/Example-XRI-Resolution)
 * [Example XDI Discovery](https://github.com/projectdanube/xdi2-xrinet/wiki/Example-XDI-Discovery)
-* [Discovering Additional Service Endpoints](https://github.com/projectdanube/xdi2-xrinet/wiki/Discovering-Additional-Service-Endpoints)
 
 ### Community
 
