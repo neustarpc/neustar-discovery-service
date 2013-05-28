@@ -21,7 +21,7 @@ To build all components.
 
 Then the combined XRI/XDI discovery proxy service is available at
 
-	http://localhost:12220/
+	http://mycloud.neustar.biz:12220/
 
 ### Information
 
