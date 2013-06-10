@@ -44,8 +44,16 @@
 
 	<!-- XDI PROXY MESSAGING TARGET -->
 
-	<bean name="/" class="xdi2.xrinet.XdiProxyMessagingTarget">
+	<bean name="xdiProxyContributor" class="xdi2.xrinet.XdiProxyContributor">
 		<property name="proxy" ref="proxy" />
+	</bean>
+
+	<bean name="/" class="xdi2.messaging.target.impl.n.NullMessagingTarget">
+		<property name="contributors">
+			<util:map>
+				<entry key="{()}" value-ref="xdiProxyContributor" />
+			</util:map>
+		</property>
 	</bean>
 
 </beans>
