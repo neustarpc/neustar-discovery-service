@@ -41,7 +41,6 @@ import xdi2.messaging.target.AbstractContextHandler;
 import xdi2.messaging.target.AbstractMessagingTarget;
 import xdi2.messaging.target.AddressHandler;
 import xdi2.messaging.target.ExecutionContext;
-import xdi2.messaging.target.contributor.Contributor;
 
 public class XrinetMessagingTarget extends AbstractMessagingTarget {
 
@@ -78,8 +77,6 @@ public class XrinetMessagingTarget extends AbstractMessagingTarget {
 
 		@Override
 		public void getContext(XDI3Segment targetAddress, GetOperation operation, MessageResult messageResult, ExecutionContext executionContext) throws Xdi2MessagingException {
-
-			Contributor c;
 			
 			// prepare XRI
 
