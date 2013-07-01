@@ -43,9 +43,9 @@ import xdi2.messaging.target.AddressHandler;
 import xdi2.messaging.target.ExecutionContext;
 import xdi2.messaging.target.contributor.Contributor;
 
-public class XdiProxyMessagingTarget extends AbstractMessagingTarget {
+public class XrinetMessagingTarget extends AbstractMessagingTarget {
 
-	private static final Logger log = LoggerFactory.getLogger(XdiProxyMessagingTarget.class);
+	private static final Logger log = LoggerFactory.getLogger(XrinetMessagingTarget.class);
 
 	public static final XDI3Segment XRI_SELF = XDI3Segment.create("[=]");
 	public static final XDI3SubSegment XRI_URI = XDI3SubSegment.create("$uri");
@@ -100,7 +100,7 @@ public class XdiProxyMessagingTarget extends AbstractMessagingTarget {
 
 			if (log.isDebugEnabled()) log.debug("Resolving " + xri);
 
-			Resolver resolver = XdiProxyMessagingTarget.this.proxy.getResolver();
+			Resolver resolver = XrinetMessagingTarget.this.proxy.getResolver();
 
 			ResolverFlags resolverFlags = new ResolverFlags();
 			ResolverState resolverState = new ResolverState();

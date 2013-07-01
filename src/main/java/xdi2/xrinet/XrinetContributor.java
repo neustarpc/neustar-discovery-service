@@ -42,9 +42,9 @@ import xdi2.messaging.target.contributor.AbstractContributor;
 import xdi2.messaging.target.contributor.ContributorXri;
 
 @ContributorXri(addresses={"{()}"})
-public class XdiProxyContributor extends AbstractContributor {
+public class XrinetContributor extends AbstractContributor {
 
-	private static final Logger log = LoggerFactory.getLogger(XdiProxyContributor.class);
+	private static final Logger log = LoggerFactory.getLogger(XrinetContributor.class);
 
 	public static final XDI3Segment XRI_SELF = XDI3Segment.create("[=]");
 	public static final XDI3SubSegment XRI_URI = XDI3SubSegment.create("$uri");
@@ -75,7 +75,7 @@ public class XdiProxyContributor extends AbstractContributor {
 
 		if (log.isDebugEnabled()) log.debug("Resolving " + xri);
 
-		Resolver resolver = XdiProxyContributor.this.proxy.getResolver();
+		Resolver resolver = XrinetContributor.this.proxy.getResolver();
 
 		ResolverFlags resolverFlags = new ResolverFlags();
 		ResolverState resolverState = new ResolverState();

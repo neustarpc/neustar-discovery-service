@@ -13,7 +13,7 @@ import xdi2.server.transport.HttpRequest;
 import xdi2.server.transport.HttpResponse;
 import xdi2.server.transport.HttpTransport;
 
-public class XdiProxyHttpTransportInterceptor extends AbstractHttpTransportInterceptor {
+public class XrinetHttpTransportInterceptor extends AbstractHttpTransportInterceptor {
 
 	private Proxy proxy;
 
