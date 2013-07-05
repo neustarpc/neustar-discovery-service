@@ -23,7 +23,6 @@ import org.openxri.xml.XRD;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import xdi2.core.Graph;
 import xdi2.core.features.equivalence.Equivalence;
 import xdi2.core.features.nodetypes.XdiAbstractInstanceUnordered;
 import xdi2.core.features.nodetypes.XdiAttributeClass;
@@ -66,14 +65,17 @@ public class XrinetContributor extends AbstractContributor {
 
 		// prepare XRI
 
-		XDI3Segment xri = XdiPeerRoot.getXriOfPeerRootArcXri(contributorXris[contributorXris.length - 1].getFirstSubSegment());
+		XDI3Segment requestedXdiPeerRootXri = contributorXris[contributorXris.length - 1];
 
-		String canonicalId = XRI2Util.cloudNumberToCanonicalId(xri);
-		if (canonicalId != null) xri = XDI3Segment.create(canonicalId);
+		XDI3Segment resolveXri = XdiPeerRoot.getXriOfPeerRootArcXri(requestedXdiPeerRootXri.getFirstSubSegment());
+		if (resolveXri == null) return false;
+
+		String canonicalId = XRI2Util.cloudNumberToCanonicalId(resolveXri);
+		if (canonicalId != null) resolveXri = XDI3Segment.create(canonicalId);
 
 		// resolve the XRI
 
-		if (log.isDebugEnabled()) log.debug("Resolving " + xri);
+		if (log.isDebugEnabled()) log.debug("Resolving " + resolveXri);
 
 		Resolver resolver = XrinetContributor.this.proxy.getResolver();
 
@@ -84,7 +86,7 @@ public class XrinetContributor extends AbstractContributor {
 
 		try {
 
-			xrd = resolver.resolveSEPToXRD(new XRI(xri.toString()), null, null, resolverFlags, resolverState);
+			xrd = resolver.resolveSEPToXRD(new XRI(resolveXri.toString()), null, null, resolverFlags, resolverState);
 		} catch (PartialResolutionException ex) {
 
 			xrd = ex.getPartialXRDS().getFinalXRD();
@@ -168,19 +170,31 @@ public class XrinetContributor extends AbstractContributor {
 
 		// prepare result graph
 
-		Graph graph = messageResult.getGraph();
+		XdiPeerRoot requestedXdiPeerRoot = XdiPeerRoot.fromContextNode(messageResult.getGraph().setDeepContextNode(requestedXdiPeerRootXri));
 
 		// add "self" peer root
-
+		/*
 		XdiLocalRoot.findLocalRoot(graph).setSelfPeerRoot(XRI_SELF);
+		 */
 
 		// add cloud number peer root
 
-		XdiPeerRoot cloudNumberXdiPeerRoot = XdiLocalRoot.findLocalRoot(graph).findPeerRoot(cloudNumber, true);
+		//XdiPeerRoot cloudNumberXdiPeerRoot = XdiLocalRoot.findLocalRoot(graph).findPeerRoot(cloudNumber, true);
+
+		// add original peer root
+
+		if (! cloudNumber.equals(requestedXdiPeerRoot.getXriOfPeerRoot())) {
+
+			XdiPeerRoot cloudNumberXdiPeerRoot = XdiLocalRoot.findLocalRoot(messageResult.getGraph()).findPeerRoot(cloudNumber, true);
+
+			Equivalence.setReferenceContextNode(requestedXdiPeerRoot.getContextNode(), cloudNumberXdiPeerRoot.getContextNode());
+
+			return false;
+		}
 
 		// add all URIs for all types
 
-		XdiAttributeClass uriXdiAttributeClass = cloudNumberXdiPeerRoot.getXdiAttributeClass(XRI_URI, true);
+		XdiAttributeClass uriXdiAttributeClass = requestedXdiPeerRoot.getXdiAttributeClass(XRI_URI, true);
 
 		for (Entry<String, List<String>> uriMapEntry : uriMap.entrySet()) {
 
@@ -196,7 +210,7 @@ public class XrinetContributor extends AbstractContributor {
 				XdiAttributeInstance uriXdiAttributeInstance = uriXdiAttributeClass.setXdiInstanceUnordered(uriXdiInstanceUnorderedArcXri);
 				uriXdiAttributeInstance.getXdiValue(true).getContextNode().setLiteral(uri);
 
-				XdiAttributeClass typeXdiAttributeClass = cloudNumberXdiPeerRoot.getXdiEntitySingleton(typeXdiEntitySingletonArcXri, true).getXdiAttributeClass(XRI_URI, true);
+				XdiAttributeClass typeXdiAttributeClass = requestedXdiPeerRoot.getXdiEntitySingleton(typeXdiEntitySingletonArcXri, true).getXdiAttributeClass(XRI_URI, true);
 				XdiAttributeInstance typeXdiAttributeInstance = typeXdiAttributeClass.setXdiInstanceOrdered(-1);
 				Equivalence.setReferenceContextNode(typeXdiAttributeInstance.getContextNode(), uriXdiAttributeInstance.getContextNode());
 			}
@@ -210,7 +224,7 @@ public class XrinetContributor extends AbstractContributor {
 				XDI3SubSegment defaultUriForTypeXdiInstanceUnorderedArcXri = XdiAbstractInstanceUnordered.createArcXriFromHash(defaultUriForType, false);
 
 				XdiAttributeInstance defaultUriForTypeXdiAttributeInstance = uriXdiAttributeClass.setXdiInstanceUnordered(defaultUriForTypeXdiInstanceUnorderedArcXri);
-				XdiAttributeSingleton defaultUriForTypeXdiAttributeSingleton = cloudNumberXdiPeerRoot.getXdiEntitySingleton(typeXdiEntitySingletonArcXri, true).getXdiAttributeSingleton(XRI_URI, true);
+				XdiAttributeSingleton defaultUriForTypeXdiAttributeSingleton = requestedXdiPeerRoot.getXdiEntitySingleton(typeXdiEntitySingletonArcXri, true).getXdiAttributeSingleton(XRI_URI, true);
 				Equivalence.setReferenceContextNode(defaultUriForTypeXdiAttributeSingleton.getContextNode(), defaultUriForTypeXdiAttributeInstance.getContextNode());
 			}
 		}
@@ -222,17 +236,8 @@ public class XrinetContributor extends AbstractContributor {
 			XDI3SubSegment defaultUriXdiInstanceUnorderedArcXri = XdiAbstractInstanceUnordered.createArcXriFromHash(defaultUri, false);
 
 			XdiAttributeInstance defaultUriXdiAttributeInstance = uriXdiAttributeClass.setXdiInstanceUnordered(defaultUriXdiInstanceUnorderedArcXri);
-			XdiAttributeSingleton defaultUriXdiAttributeSingleton = cloudNumberXdiPeerRoot.getXdiAttributeSingleton(XRI_URI, true);
+			XdiAttributeSingleton defaultUriXdiAttributeSingleton = requestedXdiPeerRoot.getXdiAttributeSingleton(XRI_URI, true);
 			Equivalence.setReferenceContextNode(defaultUriXdiAttributeSingleton.getContextNode(), defaultUriXdiAttributeInstance.getContextNode());
-		}
-
-		// add original peer root
-
-		if (! xri.equals(cloudNumber)) {
-
-			XdiPeerRoot xriXdiPeerRoot = XdiLocalRoot.findLocalRoot(graph).findPeerRoot(xri, true);
-
-			Equivalence.setReferenceContextNode(xriXdiPeerRoot.getContextNode(), cloudNumberXdiPeerRoot.getContextNode());
 		}
 
 		// done

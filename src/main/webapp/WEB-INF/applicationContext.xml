@@ -49,6 +49,11 @@
 	</bean>
 
 	<bean name="/" class="xdi2.messaging.target.impl.n.NullMessagingTarget">
+		<property name="interceptors">
+			<util:list>
+				<bean class="xdi2.messaging.target.interceptor.impl.RefInterceptor" />
+			</util:list>
+		</property>
 		<property name="contributors">
 			<util:map>
 				<entry key="{()}" value-ref="xrinetContributor" />
