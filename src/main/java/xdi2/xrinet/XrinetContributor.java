@@ -172,15 +172,6 @@ public class XrinetContributor extends AbstractContributor {
 
 		XdiPeerRoot requestedXdiPeerRoot = XdiPeerRoot.fromContextNode(messageResult.getGraph().setDeepContextNode(requestedXdiPeerRootXri));
 
-		// add "self" peer root
-		/*
-		XdiLocalRoot.findLocalRoot(graph).setSelfPeerRoot(XRI_SELF);
-		 */
-
-		// add cloud number peer root
-
-		//XdiPeerRoot cloudNumberXdiPeerRoot = XdiLocalRoot.findLocalRoot(graph).findPeerRoot(cloudNumber, true);
-
 		// add original peer root
 
 		if (! cloudNumber.equals(requestedXdiPeerRoot.getXriOfPeerRoot())) {
