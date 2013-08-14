@@ -77,7 +77,7 @@ public class XrinetMessagingTarget extends AbstractMessagingTarget {
 
 		@Override
 		public void getContext(XDI3Segment targetAddress, GetOperation operation, MessageResult messageResult, ExecutionContext executionContext) throws Xdi2MessagingException {
-			
+
 			// prepare XRI
 
 			XDI3Segment xri;
@@ -92,7 +92,7 @@ public class XrinetMessagingTarget extends AbstractMessagingTarget {
 
 			String canonicalId = XRI2Util.cloudNumberToCanonicalId(xri);
 			if (canonicalId != null) xri = XDI3Segment.create(canonicalId);
-			
+
 			// resolve the XRI
 
 			if (log.isDebugEnabled()) log.debug("Resolving " + xri);
@@ -213,7 +213,7 @@ public class XrinetMessagingTarget extends AbstractMessagingTarget {
 
 				for (String uri : uriList) {
 
-					XDI3SubSegment uriXdiInstanceUnorderedArcXri = XdiAbstractInstanceUnordered.createArcXriFromHash(uri, false);
+					XDI3SubSegment uriXdiInstanceUnorderedArcXri = XdiAbstractInstanceUnordered.createArcXriFromHash(uri, true);
 
 					XdiAttributeInstance uriXdiAttributeInstance = uriXdiAttributeClass.setXdiInstanceUnordered(uriXdiInstanceUnorderedArcXri);
 					uriXdiAttributeInstance.getXdiValue(true).getContextNode().setLiteral(uri);
@@ -229,7 +229,7 @@ public class XrinetMessagingTarget extends AbstractMessagingTarget {
 
 					String defaultUriForType = uriList.get(0);
 
-					XDI3SubSegment defaultUriForTypeXdiInstanceUnorderedArcXri = XdiAbstractInstanceUnordered.createArcXriFromHash(defaultUriForType, false);
+					XDI3SubSegment defaultUriForTypeXdiInstanceUnorderedArcXri = XdiAbstractInstanceUnordered.createArcXriFromHash(defaultUriForType, true);
 
 					XdiAttributeInstance defaultUriForTypeXdiAttributeInstance = uriXdiAttributeClass.setXdiInstanceUnordered(defaultUriForTypeXdiInstanceUnorderedArcXri);
 					XdiAttributeSingleton defaultUriForTypeXdiAttributeSingleton = cloudNumberXdiPeerRoot.getXdiEntitySingleton(typeXdiEntitySingletonArcXri, true).getXdiAttributeSingleton(XRI_URI, true);
@@ -241,7 +241,7 @@ public class XrinetMessagingTarget extends AbstractMessagingTarget {
 
 			if (defaultUri != null) {
 
-				XDI3SubSegment defaultUriXdiInstanceUnorderedArcXri = XdiAbstractInstanceUnordered.createArcXriFromHash(defaultUri, false);
+				XDI3SubSegment defaultUriXdiInstanceUnorderedArcXri = XdiAbstractInstanceUnordered.createArcXriFromHash(defaultUri, true);
 
 				XdiAttributeInstance defaultUriXdiAttributeInstance = uriXdiAttributeClass.setXdiInstanceUnordered(defaultUriXdiInstanceUnorderedArcXri);
 				XdiAttributeSingleton defaultUriXdiAttributeSingleton = cloudNumberXdiPeerRoot.getXdiAttributeSingleton(XRI_URI, true);
