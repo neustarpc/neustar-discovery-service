@@ -76,7 +76,7 @@ public class XrinetMessagingTarget extends AbstractMessagingTarget {
 	private AddressHandler addressHandler = new AbstractContextHandler() {
 
 		@Override
-		public void getContext(XDI3Segment targetAddress, GetOperation operation, MessageResult messageResult, ExecutionContext executionContext) throws Xdi2MessagingException {
+		public void executeGetOnAddress(XDI3Segment targetAddress, GetOperation operation, MessageResult messageResult, ExecutionContext executionContext) throws Xdi2MessagingException {
 
 			// prepare XRI
 
