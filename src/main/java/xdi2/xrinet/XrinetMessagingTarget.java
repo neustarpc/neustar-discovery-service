@@ -25,9 +25,9 @@ import org.slf4j.LoggerFactory;
 
 import xdi2.core.Graph;
 import xdi2.core.features.equivalence.Equivalence;
-import xdi2.core.features.nodetypes.XdiAbstractInstanceUnordered;
-import xdi2.core.features.nodetypes.XdiAttributeClass;
-import xdi2.core.features.nodetypes.XdiAttributeInstance;
+import xdi2.core.features.nodetypes.XdiAbstractMemberUnordered;
+import xdi2.core.features.nodetypes.XdiAttributeCollection;
+import xdi2.core.features.nodetypes.XdiAttributeMember;
 import xdi2.core.features.nodetypes.XdiAttributeSingleton;
 import xdi2.core.features.nodetypes.XdiLocalRoot;
 import xdi2.core.features.nodetypes.XdiPeerRoot;
@@ -202,7 +202,7 @@ public class XrinetMessagingTarget extends AbstractMessagingTarget {
 
 			// add all URIs for all types
 
-			XdiAttributeClass uriXdiAttributeClass = cloudNumberXdiPeerRoot.getXdiAttributeClass(XRI_URI, true);
+			XdiAttributeCollection uriXdiAttributeCollection = cloudNumberXdiPeerRoot.getXdiAttributeCollection(XRI_URI, true);
 
 			for (Entry<String, List<String>> uriMapEntry : uriMap.entrySet()) {
 
@@ -213,14 +213,14 @@ public class XrinetMessagingTarget extends AbstractMessagingTarget {
 
 				for (String uri : uriList) {
 
-					XDI3SubSegment uriXdiInstanceUnorderedArcXri = XdiAbstractInstanceUnordered.createArcXriFromHash(uri, true);
+					XDI3SubSegment uriXdiMemberUnorderedArcXri = XdiAbstractMemberUnordered.createArcXriFromHash(uri, true);
 
-					XdiAttributeInstance uriXdiAttributeInstance = uriXdiAttributeClass.setXdiInstanceUnordered(uriXdiInstanceUnorderedArcXri);
-					uriXdiAttributeInstance.getXdiValue(true).getContextNode().setLiteral(uri);
+					XdiAttributeMember uriXdiAttributeMember = uriXdiAttributeCollection.setXdiMemberUnordered(uriXdiMemberUnorderedArcXri);
+					uriXdiAttributeMember.getXdiValue(true).getContextNode().setLiteral(uri);
 
-					XdiAttributeClass typeXdiAttributeClass = cloudNumberXdiPeerRoot.getXdiEntitySingleton(typeXdiEntitySingletonArcXri, true).getXdiAttributeClass(XRI_URI, true);
-					XdiAttributeInstance typeXdiAttributeInstance = typeXdiAttributeClass.setXdiInstanceOrdered(-1);
-					Equivalence.setReferenceContextNode(typeXdiAttributeInstance.getContextNode(), uriXdiAttributeInstance.getContextNode());
+					XdiAttributeCollection typeXdiAttributeCollection = cloudNumberXdiPeerRoot.getXdiEntitySingleton(typeXdiEntitySingletonArcXri, true).getXdiAttributeCollection(XRI_URI, true);
+					XdiAttributeMember typeXdiAttributeMember = typeXdiAttributeCollection.setXdiMemberOrdered(-1);
+					Equivalence.setReferenceContextNode(typeXdiAttributeMember.getContextNode(), uriXdiAttributeMember.getContextNode());
 				}
 
 				// add default URI for this type
@@ -229,11 +229,11 @@ public class XrinetMessagingTarget extends AbstractMessagingTarget {
 
 					String defaultUriForType = uriList.get(0);
 
-					XDI3SubSegment defaultUriForTypeXdiInstanceUnorderedArcXri = XdiAbstractInstanceUnordered.createArcXriFromHash(defaultUriForType, true);
+					XDI3SubSegment defaultUriForTypeXdiMemberUnorderedArcXri = XdiAbstractMemberUnordered.createArcXriFromHash(defaultUriForType, true);
 
-					XdiAttributeInstance defaultUriForTypeXdiAttributeInstance = uriXdiAttributeClass.setXdiInstanceUnordered(defaultUriForTypeXdiInstanceUnorderedArcXri);
+					XdiAttributeMember defaultUriForTypeXdiAttributeMember = uriXdiAttributeCollection.setXdiMemberUnordered(defaultUriForTypeXdiMemberUnorderedArcXri);
 					XdiAttributeSingleton defaultUriForTypeXdiAttributeSingleton = cloudNumberXdiPeerRoot.getXdiEntitySingleton(typeXdiEntitySingletonArcXri, true).getXdiAttributeSingleton(XRI_URI, true);
-					Equivalence.setReferenceContextNode(defaultUriForTypeXdiAttributeSingleton.getContextNode(), defaultUriForTypeXdiAttributeInstance.getContextNode());
+					Equivalence.setReferenceContextNode(defaultUriForTypeXdiAttributeSingleton.getContextNode(), defaultUriForTypeXdiAttributeMember.getContextNode());
 				}
 			}
 
@@ -241,11 +241,11 @@ public class XrinetMessagingTarget extends AbstractMessagingTarget {
 
 			if (defaultUri != null) {
 
-				XDI3SubSegment defaultUriXdiInstanceUnorderedArcXri = XdiAbstractInstanceUnordered.createArcXriFromHash(defaultUri, true);
+				XDI3SubSegment defaultUriXdiMemberUnorderedArcXri = XdiAbstractMemberUnordered.createArcXriFromHash(defaultUri, true);
 
-				XdiAttributeInstance defaultUriXdiAttributeInstance = uriXdiAttributeClass.setXdiInstanceUnordered(defaultUriXdiInstanceUnorderedArcXri);
+				XdiAttributeMember defaultUriXdiAttributeMember = uriXdiAttributeCollection.setXdiMemberUnordered(defaultUriXdiMemberUnorderedArcXri);
 				XdiAttributeSingleton defaultUriXdiAttributeSingleton = cloudNumberXdiPeerRoot.getXdiAttributeSingleton(XRI_URI, true);
-				Equivalence.setReferenceContextNode(defaultUriXdiAttributeSingleton.getContextNode(), defaultUriXdiAttributeInstance.getContextNode());
+				Equivalence.setReferenceContextNode(defaultUriXdiAttributeSingleton.getContextNode(), defaultUriXdiAttributeMember.getContextNode());
 			}
 
 			// add original peer root
