@@ -52,9 +52,9 @@
 			</util:list>
 		</property>
 		<property name="contributors">
-			<util:map>
-				<entry key="{()}" value-ref="xrinetContributor" />
-			</util:map>
+			<util:list>
+				<ref bean="xrinetContributor" />
+			</util:list>
 		</property>
 	</bean>
 
