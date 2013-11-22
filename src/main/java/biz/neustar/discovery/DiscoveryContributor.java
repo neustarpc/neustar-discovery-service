@@ -130,7 +130,6 @@ public class DiscoveryContributor extends AbstractContributor {
 				List<?> uris = service.getURIs();
 				Collections.sort(uris, new Comparator<Object> () {
 
-					@SuppressWarnings("null")
 					@Override
 					public int compare(Object uri1, Object uri2) {
 

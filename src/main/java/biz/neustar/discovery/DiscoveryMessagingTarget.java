@@ -150,7 +150,6 @@ public class DiscoveryMessagingTarget extends AbstractMessagingTarget {
 					List<?> uris = service.getURIs();
 					Collections.sort(uris, new Comparator<Object> () {
 
-						@SuppressWarnings("null")
 						@Override
 						public int compare(Object uri1, Object uri2) {
 
