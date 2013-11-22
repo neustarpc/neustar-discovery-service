@@ -1,5 +1,4 @@
-<a href="http://projectdanube.org/" target="_blank"><img src="http://projectdanube.github.com/xdi2/images/projectdanube_logo.png" align="right"></a>
-<img src="http://projectdanube.github.com/xdi2/images/logo64.png"><br>
+<img src="http://neustarpc.github.com/neustar-clouds/images/logo.png"><br>
 
 This is a gateway that provides an XDI discovery service backed by XRI resolution.
 
@@ -23,13 +22,9 @@ To build all components.
 
 Then the XDI discovery service is available at
 
-	http://mycloud.neustar.biz:12220/
+	http://localhost:12220/
 
 ### Information
 
-* [Example XRI Resolution](https://github.com/projectdanube/xdi2-xrinet/wiki/Example-XRI-Resolution)
-* [Example XDI Discovery](https://github.com/projectdanube/xdi2-xrinet/wiki/Example-XDI-Discovery)
-
-### Community
-
-Google Group: http://groups.google.com/group/xdi2
+* [Example XRI Resolution](https://github.com/neustarpc/neustar-discovery-service/wiki/Example-XRI-Resolution)
+* [Example XDI Discovery](https://github.com/neustarpc/neustar-discovery-service/wiki/Example-XDI-Discovery)

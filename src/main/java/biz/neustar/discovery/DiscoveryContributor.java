@@ -1,4 +1,4 @@
-package xdi2.xrinet;
+package biz.neustar.discovery;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,9 +41,9 @@ import xdi2.messaging.target.contributor.AbstractContributor;
 import xdi2.messaging.target.contributor.ContributorXri;
 
 @ContributorXri(addresses={"{()}"})
-public class XrinetContributor extends AbstractContributor {
+public class DiscoveryContributor extends AbstractContributor {
 
-	private static final Logger log = LoggerFactory.getLogger(XrinetContributor.class);
+	private static final Logger log = LoggerFactory.getLogger(DiscoveryContributor.class);
 
 	public static final XDI3Segment XRI_SELF = XDI3Segment.create("[=]");
 	public static final XDI3SubSegment XRI_URI = XDI3SubSegment.create("$uri");
@@ -77,7 +77,7 @@ public class XrinetContributor extends AbstractContributor {
 
 		if (log.isDebugEnabled()) log.debug("Resolving " + resolveXri);
 
-		Resolver resolver = XrinetContributor.this.proxy.getResolver();
+		Resolver resolver = DiscoveryContributor.this.proxy.getResolver();
 
 		ResolverFlags resolverFlags = new ResolverFlags();
 		ResolverState resolverState = new ResolverState();

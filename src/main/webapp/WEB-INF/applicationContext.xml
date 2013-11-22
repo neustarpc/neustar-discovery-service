@@ -12,7 +12,7 @@
 		<property name="interceptors">
 			<util:list>
 				<bean class="xdi2.server.interceptor.impl.DebugHttpTransportInterceptor" />
-				<bean class="xdi2.xrinet.XrinetHttpTransportInterceptor">
+				<bean class="biz.neustar.discovery.DiscoveryHttpTransportInterceptor">
 					<property name="proxy" ref="proxy" />
 				</bean>
 			</util:list>
@@ -39,9 +39,9 @@
 		<constructor-arg><util:properties location="/WEB-INF/proxy.properties" /></constructor-arg>
 	</bean>
 
-	<!-- XRINET MESSAGING TARGET -->
+	<!-- DISCOVERY MESSAGING TARGET -->
 
-	<bean name="xrinetContributor" class="xdi2.xrinet.XrinetContributor">
+	<bean name="discoveryContributor" class="biz.neustar.discovery.DiscoveryContributor">
 		<property name="proxy" ref="proxy" />
 	</bean>
 
@@ -53,7 +53,7 @@
 		</property>
 		<property name="contributors">
 			<util:list>
-				<ref bean="xrinetContributor" />
+				<ref bean="discoveryContributor" />
 			</util:list>
 		</property>
 	</bean>

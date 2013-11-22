@@ -1,4 +1,4 @@
-package xdi2.xrinet;
+package biz.neustar.discovery;
 
 import java.io.IOException;
 
@@ -13,7 +13,7 @@ import xdi2.server.transport.HttpRequest;
 import xdi2.server.transport.HttpResponse;
 import xdi2.server.transport.HttpTransport;
 
-public class XrinetHttpTransportInterceptor extends AbstractHttpTransportInterceptor {
+public class DiscoveryHttpTransportInterceptor extends AbstractHttpTransportInterceptor {
 
 	private Proxy proxy;
 
