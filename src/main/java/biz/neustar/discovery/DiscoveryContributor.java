@@ -15,6 +15,7 @@ import org.openxri.resolve.ResolverFlags;
 import org.openxri.resolve.ResolverState;
 import org.openxri.resolve.exception.PartialResolutionException;
 import org.openxri.util.PrioritizedList;
+import org.openxri.xml.CanonicalID;
 import org.openxri.xml.SEPType;
 import org.openxri.xml.SEPUri;
 import org.openxri.xml.Service;
@@ -101,7 +102,19 @@ public class DiscoveryContributor extends AbstractContributor {
 
 		// extract cloud number
 
-		XDI3Segment cloudNumber = XRI2Util.canonicalIdToCloudNumber(xrd.getCanonicalID().getValue());
+		CanonicalID canonicalID = xrd.getCanonicalID();
+
+		if (canonicalID == null) {
+
+			throw new Xdi2MessagingException("Unable to read CanonicalID from XRD.", null, executionContext);
+		}
+
+		XDI3Segment cloudNumber = XRI2Util.canonicalIdToCloudNumber(canonicalID.getValue());
+
+		if (cloudNumber == null) {
+
+			throw new Xdi2MessagingException("Unable to read Cloud Number from CanonicalID: " + xrd.getCanonicalID().getValue(), null, executionContext);
+		}
 
 		if (log.isDebugEnabled()) log.debug("Cloud Number: " + cloudNumber);
 
