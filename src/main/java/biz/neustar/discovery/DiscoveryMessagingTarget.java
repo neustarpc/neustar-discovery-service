@@ -150,7 +150,6 @@ public class DiscoveryMessagingTarget extends AbstractMessagingTarget {
 					List<?> uris = service.getURIs();
 					Collections.sort(uris, new Comparator<Object> () {
 
-						@SuppressWarnings("null")
 						@Override
 						public int compare(Object uri1, Object uri2) {
 
@@ -213,7 +212,7 @@ public class DiscoveryMessagingTarget extends AbstractMessagingTarget {
 
 				for (String uri : uriList) {
 
-					XDI3SubSegment uriXdiMemberUnorderedArcXri = XdiAbstractMemberUnordered.createArcXriFromHash(uri, true);
+					XDI3SubSegment uriXdiMemberUnorderedArcXri = XdiAbstractMemberUnordered.createHashArcXri(uri, true);
 
 					XdiAttributeMember uriXdiAttributeMember = uriXdiAttributeCollection.setXdiMemberUnordered(uriXdiMemberUnorderedArcXri);
 					uriXdiAttributeMember.getXdiValue(true).getContextNode().setLiteral(uri);
@@ -229,7 +228,7 @@ public class DiscoveryMessagingTarget extends AbstractMessagingTarget {
 
 					String defaultUriForType = uriList.get(0);
 
-					XDI3SubSegment defaultUriForTypeXdiMemberUnorderedArcXri = XdiAbstractMemberUnordered.createArcXriFromHash(defaultUriForType, true);
+					XDI3SubSegment defaultUriForTypeXdiMemberUnorderedArcXri = XdiAbstractMemberUnordered.createHashArcXri(defaultUriForType, true);
 
 					XdiAttributeMember defaultUriForTypeXdiAttributeMember = uriXdiAttributeCollection.setXdiMemberUnordered(defaultUriForTypeXdiMemberUnorderedArcXri);
 					XdiAttributeSingleton defaultUriForTypeXdiAttributeSingleton = cloudNumberXdiPeerRoot.getXdiEntitySingleton(typeXdiEntitySingletonArcXri, true).getXdiAttributeSingleton(XRI_URI, true);
@@ -241,7 +240,7 @@ public class DiscoveryMessagingTarget extends AbstractMessagingTarget {
 
 			if (defaultUri != null) {
 
-				XDI3SubSegment defaultUriXdiMemberUnorderedArcXri = XdiAbstractMemberUnordered.createArcXriFromHash(defaultUri, true);
+				XDI3SubSegment defaultUriXdiMemberUnorderedArcXri = XdiAbstractMemberUnordered.createHashArcXri(defaultUri, true);
 
 				XdiAttributeMember defaultUriXdiAttributeMember = uriXdiAttributeCollection.setXdiMemberUnordered(defaultUriXdiMemberUnorderedArcXri);
 				XdiAttributeSingleton defaultUriXdiAttributeSingleton = cloudNumberXdiPeerRoot.getXdiAttributeSingleton(XRI_URI, true);

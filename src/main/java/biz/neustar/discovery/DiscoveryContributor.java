@@ -130,7 +130,6 @@ public class DiscoveryContributor extends AbstractContributor {
 				List<?> uris = service.getURIs();
 				Collections.sort(uris, new Comparator<Object> () {
 
-					@SuppressWarnings("null")
 					@Override
 					public int compare(Object uri1, Object uri2) {
 
@@ -196,7 +195,7 @@ public class DiscoveryContributor extends AbstractContributor {
 
 			for (String uri : uriList) {
 
-				XDI3SubSegment uriXdiMemberUnorderedArcXri = XdiAbstractMemberUnordered.createArcXriFromHash(uri, true);
+				XDI3SubSegment uriXdiMemberUnorderedArcXri = XdiAbstractMemberUnordered.createHashArcXri(uri, true);
 
 				XdiAttributeMember uriXdiAttributeMember = uriXdiAttributeCollection.setXdiMemberUnordered(uriXdiMemberUnorderedArcXri);
 				uriXdiAttributeMember.getXdiValue(true).getContextNode().setLiteral(uri);
@@ -212,7 +211,7 @@ public class DiscoveryContributor extends AbstractContributor {
 
 				String defaultUriForType = uriList.get(0);
 
-				XDI3SubSegment defaultUriForTypeXdiMemberUnorderedArcXri = XdiAbstractMemberUnordered.createArcXriFromHash(defaultUriForType, true);
+				XDI3SubSegment defaultUriForTypeXdiMemberUnorderedArcXri = XdiAbstractMemberUnordered.createHashArcXri(defaultUriForType, true);
 
 				XdiAttributeMember defaultUriForTypeXdiAttributeMember = uriXdiAttributeCollection.setXdiMemberUnordered(defaultUriForTypeXdiMemberUnorderedArcXri);
 				XdiAttributeSingleton defaultUriForTypeXdiAttributeSingleton = requestedXdiPeerRoot.getXdiEntitySingleton(typeXdiEntitySingletonArcXri, true).getXdiAttributeSingleton(XRI_URI, true);
@@ -224,7 +223,7 @@ public class DiscoveryContributor extends AbstractContributor {
 
 		if (defaultUri != null) {
 
-			XDI3SubSegment defaultUriXdiMemberUnorderedArcXri = XdiAbstractMemberUnordered.createArcXriFromHash(defaultUri, true);
+			XDI3SubSegment defaultUriXdiMemberUnorderedArcXri = XdiAbstractMemberUnordered.createHashArcXri(defaultUri, true);
 
 			XdiAttributeMember defaultUriXdiAttributeMember = uriXdiAttributeCollection.setXdiMemberUnordered(defaultUriXdiMemberUnorderedArcXri);
 			XdiAttributeSingleton defaultUriXdiAttributeSingleton = requestedXdiPeerRoot.getXdiAttributeSingleton(XRI_URI, true);
