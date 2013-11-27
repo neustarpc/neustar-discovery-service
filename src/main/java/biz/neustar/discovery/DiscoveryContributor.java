@@ -103,18 +103,10 @@ public class DiscoveryContributor extends AbstractContributor {
 		// extract cloud number
 
 		CanonicalID canonicalID = xrd.getCanonicalID();
-
-		if (canonicalID == null) {
-
-			throw new Xdi2MessagingException("Unable to read CanonicalID from XRD.", null, executionContext);
-		}
+		if (canonicalID == null) throw new Xdi2MessagingException("Unable to read CanonicalID from XRD.", null, executionContext);
 
 		XDI3Segment cloudNumber = XRI2Util.canonicalIdToCloudNumber(canonicalID.getValue());
-
-		if (cloudNumber == null) {
-
-			throw new Xdi2MessagingException("Unable to read Cloud Number from CanonicalID: " + xrd.getCanonicalID().getValue(), null, executionContext);
-		}
+		if (cloudNumber == null) throw new Xdi2MessagingException("Unable to read Cloud Number from CanonicalID: " + xrd.getCanonicalID().getValue(), null, executionContext);
 
 		if (log.isDebugEnabled()) log.debug("Cloud Number: " + cloudNumber);
 
