@@ -11,6 +11,7 @@ import java.text.ParseException;
 import org.apache.xerces.parsers.DOMParser;
 import org.openxri.util.DOMUtils;
 import org.openxri.xml.XRD;
+import org.openxri.xml.XRDS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -60,7 +61,8 @@ public class XRI2XNSResolver implements XRI2Resolver {
 
 		// read the response
 
-		XRD xrd = new XRD();
+		XRDS xrds = new XRDS();
+		XRD xrd;
 
 		InputStream inputStream = connection.getInputStream();
 		DOMParser domParser = DOMUtils.getDOMParser();
@@ -68,7 +70,8 @@ public class XRI2XNSResolver implements XRI2Resolver {
 		Document domDoc = domParser.getDocument();
 		Element oElement = domDoc.getDocumentElement();
 
-		xrd.fromDOM(oElement);
+		xrds.fromDOM(oElement, false);
+		xrd = xrds.getFinalXRD();
 
 		connection.disconnect();
 
