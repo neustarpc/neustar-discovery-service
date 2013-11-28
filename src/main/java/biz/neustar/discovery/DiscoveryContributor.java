@@ -44,7 +44,6 @@ public class DiscoveryContributor extends AbstractContributor implements Message
 
 	private static final Logger log = LoggerFactory.getLogger(DiscoveryContributor.class);
 
-	public static final XDI3Segment XRI_SELF = XDI3Segment.create("[=]");
 	public static final XDI3SubSegment XRI_URI = XDI3SubSegment.create("$uri");
 
 	private XRI2Resolver resolver = new XRI2XNSResolver();
