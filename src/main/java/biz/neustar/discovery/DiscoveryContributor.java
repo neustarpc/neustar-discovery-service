@@ -76,6 +76,8 @@ public class DiscoveryContributor extends AbstractContributor {
 			throw new Xdi2MessagingException("XRI Resolution 2.0 XRD Problem: " + ex.getMessage(), ex, executionContext);
 		}
 
+		if (log.isDebugEnabled()) log.debug("XRD: " + xrd);
+
 		if (log.isDebugEnabled()) log.debug("XRD Status: " + xrd.getStatus().getCode());
 
 		if ((! Status.SUCCESS.equals(xrd.getStatusCode())) && (! Status.SEP_NOT_FOUND.equals(xrd.getStatusCode()))) {
@@ -150,7 +152,8 @@ public class DiscoveryContributor extends AbstractContributor {
 
 		// extract default URI
 
-		Service defaultUriService = xrd.getNumServices() > 0 ? xrd.getServiceAt(0) : null;
+		List<?> list = xrd.getSelectedServices().getList();
+		Service defaultUriService = list.size() > 0 ? (Service) list.get(0) : null;
 		String defaultUri = defaultUriService == null ? null : defaultUriService.getURIAt(0).getUriString();
 
 		if (log.isDebugEnabled()) log.debug("Default URI: " + defaultUri);

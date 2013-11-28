@@ -9,6 +9,11 @@ import java.net.URL;
 import java.text.ParseException;
 
 import org.apache.xerces.parsers.DOMParser;
+import org.openxri.XRI;
+import org.openxri.resolve.Resolver;
+import org.openxri.resolve.ResolverFlags;
+import org.openxri.resolve.ResolverState;
+import org.openxri.resolve.exception.PartialResolutionException;
 import org.openxri.util.DOMUtils;
 import org.openxri.xml.XRD;
 import org.openxri.xml.XRDS;
@@ -30,11 +35,13 @@ public class XRI2XNSResolver implements XRI2Resolver {
 	private String atEndpointUrl;
 
 	@Override
-	public XRD resolve(XDI3Segment resolveXri) throws MalformedURLException, IOException, SAXException, URISyntaxException, ParseException {
+	public XRD resolve(XDI3Segment resolveXri) throws MalformedURLException, IOException, SAXException, URISyntaxException, ParseException, PartialResolutionException {
 
 		String endpointUrl = null;
 
 		// construct endpoint URL
+
+		if (log.isDebugEnabled()) log.debug("Resolving " + resolveXri);
 
 		if (XDIConstants.CS_EQUALS.equals(resolveXri.getFirstSubSegment().getCs())) endpointUrl = this.getEqualEndpointUrl();
 		if (XDIConstants.CS_AT.equals(resolveXri.getFirstSubSegment().getCs())) endpointUrl = this.getEqualEndpointUrl();
@@ -61,23 +68,34 @@ public class XRI2XNSResolver implements XRI2Resolver {
 
 		// read the response
 
-		XRDS xrds = new XRDS();
-		XRD xrd;
-
 		InputStream inputStream = connection.getInputStream();
 		DOMParser domParser = DOMUtils.getDOMParser();
 		domParser.parse(new InputSource(inputStream));
 		Document domDoc = domParser.getDocument();
 		Element oElement = domDoc.getDocumentElement();
 
-		xrds.fromDOM(oElement, false);
-		xrd = xrds.getFinalXRD();
-
 		connection.disconnect();
 
-		// done
+		// construct XRD
 
-		if (log.isDebugEnabled()) log.debug("XRD: " + xrd);
+		Resolver resolver = new Resolver();
+
+		XRDS xrds = new XRDS();
+		XRD xrd;
+
+		xrds.fromDOM(oElement, false);
+		xrd = xrds.getFinalXRD();
+		if (xrd == null) return null;
+
+		try {
+
+			resolver.selectServiceFromXRD(new XRDS(), xrd, new XRI("="), null, null, new ResolverFlags(), new ResolverState());
+		} catch (PartialResolutionException ex) { 
+
+			if (log.isDebugEnabled()) log.debug("No default SEP for " + resolveXri);
+		}
+
+		// done
 
 		return xrd;
 	}
@@ -85,7 +103,7 @@ public class XRI2XNSResolver implements XRI2Resolver {
 	/*
 	 * Getters and setters
 	 */
-	
+
 	public String getEqualEndpointUrl() {
 
 		return this.equalEndpointUrl;
