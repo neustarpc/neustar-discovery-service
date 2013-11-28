@@ -51,11 +51,17 @@ public class XRI2XNSResolver implements XRI2Resolver {
 		// check cache
 
 		XRD cachedXRD = this.cache.get(resolveXri);
-		if (cachedXRD != null) return cachedXRD;
+
+		if (cachedXRD != null) {
+
+			if (log.isDebugEnabled()) log.debug("Getting cached XRD for " + resolveXri);
+			
+			return cachedXRD;
+		}
 
 		// construct endpoint URL
 
-		if (log.isDebugEnabled()) log.debug("Resolving " + resolveXri);
+		if (log.isDebugEnabled()) log.debug("Resolving XRD for " + resolveXri);
 
 		if (XDIConstants.CS_EQUALS.equals(resolveXri.getFirstSubSegment().getCs())) endpointUrl = this.getEqualEndpointUrl();
 		if (XDIConstants.CS_AT.equals(resolveXri.getFirstSubSegment().getCs())) endpointUrl = this.getEqualEndpointUrl();
