@@ -7,6 +7,8 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.ParseException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.xerces.parsers.DOMParser;
 import org.openxri.XRI;
@@ -34,10 +36,22 @@ public class XRI2XNSResolver implements XRI2Resolver {
 	private String equalEndpointUrl;
 	private String atEndpointUrl;
 
+	private Map<XDI3Segment, XRD> cache = new HashMap<XDI3Segment, XRD> ();
+
+	public void reset() {
+
+		this.cache.clear();
+	}
+
 	@Override
 	public XRD resolve(XDI3Segment resolveXri) throws MalformedURLException, IOException, SAXException, URISyntaxException, ParseException, PartialResolutionException {
 
 		String endpointUrl = null;
+
+		// check cache
+
+		XRD cachedXRD = this.cache.get(resolveXri);
+		if (cachedXRD != null) return cachedXRD;
 
 		// construct endpoint URL
 
@@ -94,6 +108,10 @@ public class XRI2XNSResolver implements XRI2Resolver {
 
 			if (log.isDebugEnabled()) log.debug("No default SEP for " + resolveXri);
 		}
+
+		// cache
+
+		this.cache.put(resolveXri, xrd);
 
 		// done
 

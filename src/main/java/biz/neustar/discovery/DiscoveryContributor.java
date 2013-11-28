@@ -29,16 +29,18 @@ import xdi2.core.xri3.CloudNumber;
 import xdi2.core.xri3.XDI3Segment;
 import xdi2.core.xri3.XDI3SubSegment;
 import xdi2.messaging.GetOperation;
+import xdi2.messaging.MessageEnvelope;
 import xdi2.messaging.MessageResult;
 import xdi2.messaging.exceptions.Xdi2MessagingException;
 import xdi2.messaging.target.ExecutionContext;
 import xdi2.messaging.target.contributor.AbstractContributor;
 import xdi2.messaging.target.contributor.ContributorXri;
+import xdi2.messaging.target.interceptor.MessageEnvelopeInterceptor;
 import biz.neustar.discovery.resolver.XRI2Resolver;
 import biz.neustar.discovery.resolver.XRI2XNSResolver;
 
 @ContributorXri(addresses={"{()}"})
-public class DiscoveryContributor extends AbstractContributor {
+public class DiscoveryContributor extends AbstractContributor implements MessageEnvelopeInterceptor {
 
 	private static final Logger log = LoggerFactory.getLogger(DiscoveryContributor.class);
 
@@ -224,6 +226,29 @@ public class DiscoveryContributor extends AbstractContributor {
 		// done
 
 		return false;
+	}
+
+	/*
+	 * MessageEnvelopeInterceptor
+	 */
+
+	@Override
+	public boolean before(MessageEnvelope messageEnvelope, MessageResult messageResult, ExecutionContext executionContext) throws Xdi2MessagingException {
+
+		this.getResolver().reset();
+
+		return false;
+	}
+
+	@Override
+	public boolean after(MessageEnvelope messageEnvelope, MessageResult messageResult, ExecutionContext executionContext) throws Xdi2MessagingException {
+
+		return false;
+	}
+
+	@Override
+	public void exception(MessageEnvelope messageEnvelope, MessageResult messageResult, ExecutionContext executionContext, Exception ex) {
+
 	}
 
 	/*
