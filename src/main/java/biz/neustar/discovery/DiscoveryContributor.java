@@ -32,6 +32,7 @@ import xdi2.core.features.nodetypes.XdiAttributeSingleton;
 import xdi2.core.features.nodetypes.XdiLocalRoot;
 import xdi2.core.features.nodetypes.XdiPeerRoot;
 import xdi2.core.util.XRI2Util;
+import xdi2.core.xri3.CloudNumber;
 import xdi2.core.xri3.XDI3Segment;
 import xdi2.core.xri3.XDI3SubSegment;
 import xdi2.messaging.GetOperation;
@@ -71,8 +72,9 @@ public class DiscoveryContributor extends AbstractContributor {
 		XDI3Segment resolveXri = XdiPeerRoot.getXriOfPeerRootArcXri(requestedXdiPeerRootXri.getFirstSubSegment());
 		if (resolveXri == null) return false;
 
-		String canonicalId = XRI2Util.cloudNumberToCanonicalId(resolveXri);
-		if (canonicalId != null) resolveXri = XDI3Segment.create(canonicalId);
+		CloudNumber resolveCloudNumber = CloudNumber.fromXri(resolveXri);
+		String resolveINumber = resolveCloudNumber == null ? null : XRI2Util.cloudNumberToINumber(resolveCloudNumber);
+		if (resolveINumber != null) resolveXri = XDI3Segment.create(resolveINumber);
 
 		// resolve the XRI
 
@@ -105,7 +107,9 @@ public class DiscoveryContributor extends AbstractContributor {
 		CanonicalID canonicalID = xrd.getCanonicalID();
 		if (canonicalID == null) throw new Xdi2MessagingException("Unable to read CanonicalID from XRD.", null, executionContext);
 
-		XDI3Segment cloudNumber = XRI2Util.canonicalIdToCloudNumber(canonicalID.getValue());
+		String iNumber = canonicalID.getValue();
+		CloudNumber cloudNumber = XRI2Util.iNumberToCloudNumber(iNumber);
+		if (cloudNumber == null) cloudNumber = CloudNumber.create(iNumber);
 		if (cloudNumber == null) throw new Xdi2MessagingException("Unable to read Cloud Number from CanonicalID: " + xrd.getCanonicalID().getValue(), null, executionContext);
 
 		if (log.isDebugEnabled()) log.debug("Cloud Number: " + cloudNumber);
@@ -180,7 +184,7 @@ public class DiscoveryContributor extends AbstractContributor {
 
 		if (! cloudNumber.equals(requestedXdiPeerRoot.getXriOfPeerRoot())) {
 
-			XdiPeerRoot cloudNumberXdiPeerRoot = XdiLocalRoot.findLocalRoot(messageResult.getGraph()).findPeerRoot(cloudNumber, true);
+			XdiPeerRoot cloudNumberXdiPeerRoot = XdiLocalRoot.findLocalRoot(messageResult.getGraph()).findPeerRoot(cloudNumber.getXri(), true);
 
 			Equivalence.setReferenceContextNode(requestedXdiPeerRoot.getContextNode(), cloudNumberXdiPeerRoot.getContextNode());
 
