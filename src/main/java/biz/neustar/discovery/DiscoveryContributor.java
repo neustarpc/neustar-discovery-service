@@ -71,6 +71,7 @@ public class DiscoveryContributor extends AbstractContributor {
 		try {
 
 			xrd = this.resolver.resolve(resolveXri);
+			if (xrd == null) throw new Exception("No XRD.");
 		} catch (Exception ex) {
 
 			throw new Xdi2MessagingException("XRI Resolution 2.0 XRD Problem: " + ex.getMessage(), ex, executionContext);
