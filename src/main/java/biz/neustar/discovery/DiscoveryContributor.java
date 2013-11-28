@@ -161,7 +161,7 @@ public class DiscoveryContributor extends AbstractContributor {
 
 		// add original peer root
 
-		if (! cloudNumber.equals(requestedXdiPeerRoot.getXriOfPeerRoot())) {
+		if (! cloudNumber.getXri().equals(requestedXdiPeerRoot.getXriOfPeerRoot())) {
 
 			XdiPeerRoot cloudNumberXdiPeerRoot = XdiLocalRoot.findLocalRoot(messageResult.getGraph()).findPeerRoot(cloudNumber.getXri(), true);
 
