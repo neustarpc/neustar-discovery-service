@@ -17,6 +17,7 @@ import org.openxri.resolve.ResolverFlags;
 import org.openxri.resolve.ResolverState;
 import org.openxri.resolve.exception.PartialResolutionException;
 import org.openxri.util.DOMUtils;
+import org.openxri.xml.Status;
 import org.openxri.xml.XRD;
 import org.openxri.xml.XRDS;
 import org.slf4j.Logger;
@@ -107,6 +108,8 @@ public class XRI2XNSResolver implements XRI2Resolver {
 		xrd = xrds.getFinalXRD();
 		if (xrd == null) return null;
 
+		if (! Status.SUCCESS.equals(xrd.getStatusCode())) throw new IOException("" + xrd.getStatus().getCode() + " (" + xrd.getStatus().getText() + ")");
+		
 		try {
 
 			resolver.selectServiceFromXRD(new XRDS(), xrd, new XRI("="), null, null, new ResolverFlags(), new ResolverState());
