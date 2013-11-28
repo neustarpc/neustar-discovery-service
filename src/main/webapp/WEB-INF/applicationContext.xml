@@ -12,9 +12,6 @@
 		<property name="interceptors">
 			<util:list>
 				<bean class="xdi2.server.interceptor.impl.DebugHttpTransportInterceptor" />
-				<bean class="biz.neustar.discovery.DiscoveryHttpTransportInterceptor">
-					<property name="proxy" ref="proxy" />
-				</bean>
 			</util:list>
 		</property>
 	</bean>
@@ -29,20 +26,15 @@
 		</property>
 	</bean>
 
-	<!-- OPENXRI PROXY -->
-
-	<bean id="proxy" class="org.openxri.proxy.impl.BasicProxy" init-method="init" destroy-method="shutdown">
-		<constructor-arg><ref bean="proxyConfig" /></constructor-arg> 
-	</bean>
-	
-	<bean id="proxyConfig" class="org.openxri.config.impl.PropertiesProxyConfig">
-		<constructor-arg><util:properties location="/WEB-INF/proxy.properties" /></constructor-arg>
-	</bean>
-
 	<!-- DISCOVERY MESSAGING TARGET -->
 
 	<bean name="discoveryContributor" class="biz.neustar.discovery.DiscoveryContributor">
-		<property name="proxy" ref="proxy" />
+		<property name="resolver">
+			<bean class="biz.neustar.discovery.resolver.XRI2XNSResolver">
+				<property name="equalEndpointUrl" value="http://ote.equal.xri.net/"/>
+				<property name="atEndpointUrl" value="http://ote.at.xri.net/"/>
+			</bean>
+		</property>
 	</bean>
 
 	<bean name="/" class="xdi2.messaging.target.impl.n.NullMessagingTarget">

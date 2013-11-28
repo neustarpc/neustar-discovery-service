@@ -8,12 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.openxri.XRI;
-import org.openxri.proxy.impl.AbstractProxy;
-import org.openxri.resolve.Resolver;
-import org.openxri.resolve.ResolverFlags;
-import org.openxri.resolve.ResolverState;
-import org.openxri.resolve.exception.PartialResolutionException;
 import org.openxri.util.PrioritizedList;
 import org.openxri.xml.CanonicalID;
 import org.openxri.xml.SEPType;
@@ -41,6 +35,8 @@ import xdi2.messaging.exceptions.Xdi2MessagingException;
 import xdi2.messaging.target.ExecutionContext;
 import xdi2.messaging.target.contributor.AbstractContributor;
 import xdi2.messaging.target.contributor.ContributorXri;
+import biz.neustar.discovery.resolver.XRI2Resolver;
+import biz.neustar.discovery.resolver.XRI2XNSResolver;
 
 @ContributorXri(addresses={"{()}"})
 public class DiscoveryContributor extends AbstractContributor {
@@ -50,17 +46,7 @@ public class DiscoveryContributor extends AbstractContributor {
 	public static final XDI3Segment XRI_SELF = XDI3Segment.create("[=]");
 	public static final XDI3SubSegment XRI_URI = XDI3SubSegment.create("$uri");
 
-	private AbstractProxy proxy;
-
-	public AbstractProxy getProxy() {
-
-		return this.proxy;
-	}
-
-	public void setProxy(AbstractProxy proxy) {
-
-		this.proxy = proxy;
-	}
+	private XRI2Resolver resolver = new XRI2XNSResolver();
 
 	@Override
 	public boolean executeGetOnAddress(XDI3Segment[] contributorXris, XDI3Segment contributorsXri, XDI3Segment relativeTargetAddress, GetOperation operation, MessageResult messageResult, ExecutionContext executionContext) throws Xdi2MessagingException {
@@ -80,26 +66,21 @@ public class DiscoveryContributor extends AbstractContributor {
 
 		if (log.isDebugEnabled()) log.debug("Resolving " + resolveXri);
 
-		Resolver resolver = DiscoveryContributor.this.proxy.getResolver();
-
-		ResolverFlags resolverFlags = new ResolverFlags();
-		ResolverState resolverState = new ResolverState();
-
 		XRD xrd;
 
 		try {
 
-			xrd = resolver.resolveSEPToXRD(new XRI(resolveXri.toString()), null, null, resolverFlags, resolverState);
-		} catch (PartialResolutionException ex) {
+			xrd = this.resolver.resolve(resolveXri);
+		} catch (Exception ex) {
 
-			xrd = ex.getPartialXRDS().getFinalXRD();
+			throw new Xdi2MessagingException("XRI Resolution 2.0 XRD Problem: " + ex.getMessage(), ex, executionContext);
 		}
 
 		if (log.isDebugEnabled()) log.debug("XRD Status: " + xrd.getStatus().getCode());
 
 		if ((! Status.SUCCESS.equals(xrd.getStatusCode())) && (! Status.SEP_NOT_FOUND.equals(xrd.getStatusCode()))) {
 
-			throw new Xdi2MessagingException("XRI Resolution 2.0 Problem: " + xrd.getStatusCode() + " (" + xrd.getStatus().getValue() + ")", null, executionContext);
+			throw new Xdi2MessagingException("XRI Resolution 2.0 Status Problem: " + xrd.getStatusCode() + " (" + xrd.getStatus().getValue() + ")", null, executionContext);
 		}
 
 		// extract cloud number
@@ -242,5 +223,19 @@ public class DiscoveryContributor extends AbstractContributor {
 		// done
 
 		return false;
+	}
+
+	/*
+	 * Getters and setters
+	 */
+
+	public XRI2Resolver getResolver() {
+
+		return this.resolver;
+	}
+
+	public void setResolver(XRI2Resolver resolver) {
+
+		this.resolver = resolver;
 	}
 }
