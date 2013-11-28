@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.openxri.util.PrioritizedList;
 import org.openxri.xml.CanonicalID;
 import org.openxri.xml.SEPType;
 import org.openxri.xml.SEPUri;
@@ -151,9 +150,7 @@ public class DiscoveryContributor extends AbstractContributor {
 
 		// extract default URI
 
-		PrioritizedList defaultUriPrioritizedList = xrd.getSelectedServices();
-		ArrayList<?> defaultUriList = defaultUriPrioritizedList == null ? null : defaultUriPrioritizedList.getList();
-		Service defaultUriService = defaultUriList == null || defaultUriList.size() < 1 ? null : (Service) defaultUriList.get(0);
+		Service defaultUriService = xrd.getNumServices() > 0 ? xrd.getServiceAt(0) : null;
 		String defaultUri = defaultUriService == null ? null : defaultUriService.getURIAt(0).getUriString();
 
 		if (log.isDebugEnabled()) log.debug("Default URI: " + defaultUri);
