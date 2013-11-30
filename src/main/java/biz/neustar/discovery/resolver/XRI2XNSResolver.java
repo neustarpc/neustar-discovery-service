@@ -65,7 +65,7 @@ public class XRI2XNSResolver implements XRI2Resolver {
 		if (log.isDebugEnabled()) log.debug("Resolving XRD for " + resolveXri);
 
 		if (XDIConstants.CS_EQUALS.equals(resolveXri.getFirstSubSegment().getCs())) endpointUrl = this.getEqualEndpointUrl();
-		if (XDIConstants.CS_AT.equals(resolveXri.getFirstSubSegment().getCs())) endpointUrl = this.getEqualEndpointUrl();
+		if (XDIConstants.CS_AT.equals(resolveXri.getFirstSubSegment().getCs())) endpointUrl = this.getAtEndpointUrl();
 
 		if (resolveXri.toString().charAt(0) == '[') endpointUrl += resolveXri.toString().substring(3);
 		else if (resolveXri.toString().charAt(1) == '!') endpointUrl += resolveXri.toString().substring(1);
