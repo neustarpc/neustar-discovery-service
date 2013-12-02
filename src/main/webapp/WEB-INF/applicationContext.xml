@@ -32,7 +32,7 @@
 		<property name="resolver">
 			<bean class="biz.neustar.discovery.resolver.XRI2XNSResolver">
 				<property name="equalEndpointUrl" value="http://ote.equal.xri.net/"/>
-				<property name="atEndpointUrl" value="http://ote.at.xri.net/"/>
+				<property name="atEndpointUrl" value="http://ote.equal.xri.net/"/>
 			</bean>
 		</property>
 	</bean>
