@@ -197,7 +197,7 @@ public class DiscoveryContributor extends AbstractContributor {
 
 			for (String uri : uriList) {
 
-				XDI3SubSegment uriXdiMemberUnorderedArcXri = XdiAbstractMemberUnordered.createHashArcXri(uri, true);
+				XDI3SubSegment uriXdiMemberUnorderedArcXri = XdiAbstractMemberUnordered.createDigestArcXri(uri, true);
 
 				XdiAttributeMember uriXdiAttributeMember = uriXdiAttributeCollection.setXdiMemberUnordered(uriXdiMemberUnorderedArcXri);
 				uriXdiAttributeMember.getXdiValue(true).getContextNode().setLiteral(uri);
@@ -213,7 +213,7 @@ public class DiscoveryContributor extends AbstractContributor {
 
 				String defaultUriForType = uriList.get(0);
 
-				XDI3SubSegment defaultUriForTypeXdiMemberUnorderedArcXri = XdiAbstractMemberUnordered.createHashArcXri(defaultUriForType, true);
+				XDI3SubSegment defaultUriForTypeXdiMemberUnorderedArcXri = XdiAbstractMemberUnordered.createDigestArcXri(defaultUriForType, true);
 
 				XdiAttributeMember defaultUriForTypeXdiAttributeMember = uriXdiAttributeCollection.setXdiMemberUnordered(defaultUriForTypeXdiMemberUnorderedArcXri);
 				XdiAttributeSingleton defaultUriForTypeXdiAttributeSingleton = requestedXdiPeerRoot.getXdiEntitySingleton(typeXdiEntitySingletonArcXri, true).getXdiAttributeSingleton(XRI_URI, true);
@@ -225,7 +225,7 @@ public class DiscoveryContributor extends AbstractContributor {
 
 		if (defaultUri != null) {
 
-			XDI3SubSegment defaultUriXdiMemberUnorderedArcXri = XdiAbstractMemberUnordered.createHashArcXri(defaultUri, true);
+			XDI3SubSegment defaultUriXdiMemberUnorderedArcXri = XdiAbstractMemberUnordered.createDigestArcXri(defaultUri, true);
 
 			XdiAttributeMember defaultUriXdiAttributeMember = uriXdiAttributeCollection.setXdiMemberUnordered(defaultUriXdiMemberUnorderedArcXri);
 			XdiAttributeSingleton defaultUriXdiAttributeSingleton = requestedXdiPeerRoot.getXdiAttributeSingleton(XRI_URI, true);
