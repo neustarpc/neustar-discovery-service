@@ -2,28 +2,28 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>xdi2</groupId>
-	<artifactId>xdi2-xrinet</artifactId>
+	<groupId>biz.neustar</groupId>
+	<artifactId>neustar-discovery-service</artifactId>
 	<packaging>${packaging.type}</packaging>
 	<version>0.1-SNAPSHOT</version>
-	<name>xdi2-xrinet</name>
+	<name>neustar-discovery-service</name>
 
 	<issueManagement>
-		<url>https://github.com/projectdanube/xdi2-xrinet/issues</url>
+		<url>https://github.com/neustarpc/neustar-discovery-service/issues</url>
 		<system>GitHub Issues</system>
 	</issueManagement>
 
 	<distributionManagement>
 		<site>
 			<id>github-project-site</id>
-			<url>scm:git:ssh://git@github.com/projectdanube/xdi2-xrinet.git:gh-pages</url>
+			<url>scm:git:ssh://git@github.com/neustarpc/neustar-discovery-service.git:gh-pages</url>
 		</site>
 	</distributionManagement>
 
 	<scm>
-		<url>https://github.com/projectdanube/xdi2-xrinet</url>
-		<connection>scm:git:git://github.com/projectdanube/xdi2-xrinet.git</connection>
-		<developerConnection>scm:git:git@github.com:projectdanube/xdi2-xrinet.git</developerConnection>
+		<url>https://github.com/neustarpc/neustar-discovery-service</url>
+		<connection>scm:git:git://github.com/neustarpc/neustar-discovery-service.git</connection>
+		<developerConnection>scm:git:git@github.com:neustarpc/neustar-discovery-service.git</developerConnection>
 	</scm>
 
 	<properties>
@@ -124,34 +124,10 @@
 		</dependency>
 		<dependency>
 			<groupId>org.openxri</groupId>
-			<artifactId>openxri-server-logic</artifactId>
+			<artifactId>openxri-client</artifactId>
 			<version>1.2.2-SNAPSHOT</version>
 			<scope>compile</scope>
 			<exclusions>
-				<exclusion>
-					<groupId>javax.servlet</groupId>
-					<artifactId>servlet-api</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>javax.transaction</groupId>
-					<artifactId>jta</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.hibernate</groupId>
-					<artifactId>hibernate</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>mysql</groupId>
-					<artifactId>mysql-connector-java</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>hsqldb</groupId>
-					<artifactId>hsqldb</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.apache.derby</groupId>
-					<artifactId>derby</artifactId>
-				</exclusion>
 				<exclusion>
 					<groupId>org.slf4j</groupId>
 					<artifactId>slf4j-jcl</artifactId>
