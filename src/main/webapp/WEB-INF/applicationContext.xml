@@ -40,6 +40,7 @@
 	<bean name="/" class="xdi2.messaging.target.impl.n.NullMessagingTarget">
 		<property name="interceptors">
 			<util:list>
+				<ref bean="discoveryContributor" />
 				<bean class="xdi2.messaging.target.interceptor.impl.RefInterceptor" />
 			</util:list>
 		</property>
