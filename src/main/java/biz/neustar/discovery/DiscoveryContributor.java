@@ -34,7 +34,9 @@ import xdi2.messaging.MessageResult;
 import xdi2.messaging.context.ExecutionContext;
 import xdi2.messaging.exceptions.Xdi2MessagingException;
 import xdi2.messaging.target.contributor.AbstractContributor;
+import xdi2.messaging.target.contributor.ContributorResult;
 import xdi2.messaging.target.contributor.ContributorXri;
+import xdi2.messaging.target.interceptor.InterceptorResult;
 import xdi2.messaging.target.interceptor.MessageEnvelopeInterceptor;
 import biz.neustar.discovery.resolver.XRI2Resolver;
 import biz.neustar.discovery.resolver.XRI2XNSResolver;
@@ -49,14 +51,14 @@ public class DiscoveryContributor extends AbstractContributor implements Message
 	private XRI2Resolver resolver = new XRI2XNSResolver();
 
 	@Override
-	public boolean executeGetOnAddress(XDI3Segment[] contributorXris, XDI3Segment contributorsXri, XDI3Segment relativeTargetAddress, GetOperation operation, MessageResult messageResult, ExecutionContext executionContext) throws Xdi2MessagingException {
+	public ContributorResult executeGetOnAddress(XDI3Segment[] contributorXris, XDI3Segment contributorsXri, XDI3Segment relativeTargetAddress, GetOperation operation, MessageResult messageResult, ExecutionContext executionContext) throws Xdi2MessagingException {
 
 		// prepare XRI
 
 		XDI3Segment requestedXdiPeerRootXri = contributorXris[contributorXris.length - 1];
 
 		XDI3Segment resolveXri = XdiPeerRoot.getXriOfPeerRootArcXri(requestedXdiPeerRootXri.getFirstSubSegment());
-		if (resolveXri == null) return false;
+		if (resolveXri == null) return ContributorResult.DEFAULT;
 
 		CloudNumber resolveCloudNumber = CloudNumber.fromXri(resolveXri);
 		String resolveINumber = resolveCloudNumber == null ? null : XRI2Util.cloudNumberToINumber(resolveCloudNumber);
@@ -171,7 +173,7 @@ public class DiscoveryContributor extends AbstractContributor implements Message
 
 			Equivalence.setReferenceContextNode(requestedXdiPeerRoot.getContextNode(), cloudNumberXdiPeerRoot.getContextNode());
 
-			return false;
+			return new ContributorResult(false, false, true);
 		}
 
 		// add all URIs for all types
@@ -224,7 +226,7 @@ public class DiscoveryContributor extends AbstractContributor implements Message
 
 		// done
 
-		return false;
+		return new ContributorResult(false, false, true);
 	}
 
 	/*
@@ -232,17 +234,17 @@ public class DiscoveryContributor extends AbstractContributor implements Message
 	 */
 
 	@Override
-	public boolean before(MessageEnvelope messageEnvelope, MessageResult messageResult, ExecutionContext executionContext) throws Xdi2MessagingException {
+	public InterceptorResult before(MessageEnvelope messageEnvelope, MessageResult messageResult, ExecutionContext executionContext) throws Xdi2MessagingException {
 
 		this.getResolver().reset();
 
-		return false;
+		return InterceptorResult.DEFAULT;
 	}
 
 	@Override
-	public boolean after(MessageEnvelope messageEnvelope, MessageResult messageResult, ExecutionContext executionContext) throws Xdi2MessagingException {
+	public InterceptorResult after(MessageEnvelope messageEnvelope, MessageResult messageResult, ExecutionContext executionContext) throws Xdi2MessagingException {
 
-		return false;
+		return InterceptorResult.DEFAULT;
 	}
 
 	@Override
