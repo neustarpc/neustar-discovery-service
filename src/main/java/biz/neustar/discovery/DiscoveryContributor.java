@@ -46,7 +46,8 @@ public class DiscoveryContributor extends AbstractContributor implements Message
 
 	private static final Logger log = LoggerFactory.getLogger(DiscoveryContributor.class);
 
-	public static final XDI3SubSegment XRI_URI = XDI3SubSegment.create("$uri");
+	public static final XDI3SubSegment XRI_SS_AC_URI = XDI3SubSegment.create("[<$uri>]");
+	public static final XDI3SubSegment XRI_SS_AS_URI = XDI3SubSegment.create("<$uri>");
 
 	private XRI2Resolver resolver = new XRI2XNSResolver();
 
@@ -178,7 +179,9 @@ public class DiscoveryContributor extends AbstractContributor implements Message
 
 		// add all URIs for all types
 
-		XdiAttributeCollection uriXdiAttributeCollection = requestedXdiPeerRoot.getXdiAttributeCollection(XRI_URI, true);
+		XdiAttributeCollection uriXdiAttributeCollection = requestedXdiPeerRoot.getXdiAttributeCollection(XRI_SS_AC_URI, true);
+
+		System.err.println("::::::::::: " + uriXdiAttributeCollection);
 
 		for (Entry<String, List<String>> uriMapEntry : uriMap.entrySet()) {
 
@@ -194,7 +197,7 @@ public class DiscoveryContributor extends AbstractContributor implements Message
 				XdiAttributeMember uriXdiAttributeMember = uriXdiAttributeCollection.setXdiMemberUnordered(uriXdiMemberUnorderedArcXri);
 				uriXdiAttributeMember.getXdiValue(true).getContextNode().setLiteral(uri);
 
-				XdiAttributeCollection typeXdiAttributeCollection = requestedXdiPeerRoot.getXdiEntitySingleton(typeXdiEntitySingletonArcXri, true).getXdiAttributeCollection(XRI_URI, true);
+				XdiAttributeCollection typeXdiAttributeCollection = requestedXdiPeerRoot.getXdiEntitySingleton(typeXdiEntitySingletonArcXri, true).getXdiAttributeCollection(XRI_SS_AC_URI, true);
 				XdiAttributeMember typeXdiAttributeMember = typeXdiAttributeCollection.setXdiMemberOrdered(-1);
 				Equivalence.setReferenceContextNode(typeXdiAttributeMember.getContextNode(), uriXdiAttributeMember.getContextNode());
 			}
@@ -208,7 +211,7 @@ public class DiscoveryContributor extends AbstractContributor implements Message
 				XDI3SubSegment defaultUriForTypeXdiMemberUnorderedArcXri = XdiAbstractMemberUnordered.createDigestArcXri(defaultUriForType, true);
 
 				XdiAttributeMember defaultUriForTypeXdiAttributeMember = uriXdiAttributeCollection.setXdiMemberUnordered(defaultUriForTypeXdiMemberUnorderedArcXri);
-				XdiAttributeSingleton defaultUriForTypeXdiAttributeSingleton = requestedXdiPeerRoot.getXdiEntitySingleton(typeXdiEntitySingletonArcXri, true).getXdiAttributeSingleton(XRI_URI, true);
+				XdiAttributeSingleton defaultUriForTypeXdiAttributeSingleton = requestedXdiPeerRoot.getXdiEntitySingleton(typeXdiEntitySingletonArcXri, true).getXdiAttributeSingleton(XRI_SS_AC_URI, true);
 				Equivalence.setReferenceContextNode(defaultUriForTypeXdiAttributeSingleton.getContextNode(), defaultUriForTypeXdiAttributeMember.getContextNode());
 			}
 		}
@@ -220,7 +223,7 @@ public class DiscoveryContributor extends AbstractContributor implements Message
 			XDI3SubSegment defaultUriXdiMemberUnorderedArcXri = XdiAbstractMemberUnordered.createDigestArcXri(defaultUri, true);
 
 			XdiAttributeMember defaultUriXdiAttributeMember = uriXdiAttributeCollection.setXdiMemberUnordered(defaultUriXdiMemberUnorderedArcXri);
-			XdiAttributeSingleton defaultUriXdiAttributeSingleton = requestedXdiPeerRoot.getXdiAttributeSingleton(XRI_URI, true);
+			XdiAttributeSingleton defaultUriXdiAttributeSingleton = requestedXdiPeerRoot.getXdiAttributeSingleton(XRI_SS_AS_URI, true);
 			Equivalence.setReferenceContextNode(defaultUriXdiAttributeSingleton.getContextNode(), defaultUriXdiAttributeMember.getContextNode());
 		}
 
