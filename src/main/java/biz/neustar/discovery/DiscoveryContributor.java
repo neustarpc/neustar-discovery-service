@@ -181,14 +181,12 @@ public class DiscoveryContributor extends AbstractContributor implements Message
 
 		XdiAttributeCollection uriXdiAttributeCollection = requestedXdiPeerRoot.getXdiAttributeCollection(XRI_SS_AC_URI, true);
 
-		System.err.println("::::::::::: " + uriXdiAttributeCollection);
-
 		for (Entry<String, List<String>> uriMapEntry : uriMap.entrySet()) {
 
 			String type = uriMapEntry.getKey();
 			List<String> uriList = uriMapEntry.getValue();
 
-			XDI3SubSegment typeXdiEntitySingletonArcXri = XRI2Util.typeToXdiEntitySingletonArcXri(type);
+			XDI3SubSegment typeXdiArcXri = XRI2Util.typeToXdiArcXri(type);
 
 			for (String uri : uriList) {
 
@@ -197,7 +195,7 @@ public class DiscoveryContributor extends AbstractContributor implements Message
 				XdiAttributeMember uriXdiAttributeMember = uriXdiAttributeCollection.setXdiMemberUnordered(uriXdiMemberUnorderedArcXri);
 				uriXdiAttributeMember.getXdiValue(true).getContextNode().setLiteral(uri);
 
-				XdiAttributeCollection typeXdiAttributeCollection = requestedXdiPeerRoot.getXdiEntitySingleton(typeXdiEntitySingletonArcXri, true).getXdiAttributeCollection(XRI_SS_AC_URI, true);
+				XdiAttributeCollection typeXdiAttributeCollection = requestedXdiPeerRoot.getXdiAttributeSingleton(typeXdiArcXri, true).getXdiAttributeCollection(XRI_SS_AC_URI, true);
 				XdiAttributeMember typeXdiAttributeMember = typeXdiAttributeCollection.setXdiMemberOrdered(-1);
 				Equivalence.setReferenceContextNode(typeXdiAttributeMember.getContextNode(), uriXdiAttributeMember.getContextNode());
 			}
@@ -211,7 +209,7 @@ public class DiscoveryContributor extends AbstractContributor implements Message
 				XDI3SubSegment defaultUriForTypeXdiMemberUnorderedArcXri = XdiAbstractMemberUnordered.createDigestArcXri(defaultUriForType, true);
 
 				XdiAttributeMember defaultUriForTypeXdiAttributeMember = uriXdiAttributeCollection.setXdiMemberUnordered(defaultUriForTypeXdiMemberUnorderedArcXri);
-				XdiAttributeSingleton defaultUriForTypeXdiAttributeSingleton = requestedXdiPeerRoot.getXdiEntitySingleton(typeXdiEntitySingletonArcXri, true).getXdiAttributeSingleton(XRI_SS_AC_URI, true);
+				XdiAttributeSingleton defaultUriForTypeXdiAttributeSingleton = requestedXdiPeerRoot.getXdiAttributeSingleton(typeXdiArcXri, true).getXdiAttributeSingleton(XRI_SS_AC_URI, true);
 				Equivalence.setReferenceContextNode(defaultUriForTypeXdiAttributeSingleton.getContextNode(), defaultUriForTypeXdiAttributeMember.getContextNode());
 			}
 		}
