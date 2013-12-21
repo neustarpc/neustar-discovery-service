@@ -209,7 +209,7 @@ public class DiscoveryContributor extends AbstractContributor implements Message
 				XDI3SubSegment defaultUriForTypeXdiMemberUnorderedArcXri = XdiAbstractMemberUnordered.createDigestArcXri(defaultUriForType, true);
 
 				XdiAttributeMember defaultUriForTypeXdiAttributeMember = uriXdiAttributeCollection.setXdiMemberUnordered(defaultUriForTypeXdiMemberUnorderedArcXri);
-				XdiAttributeSingleton defaultUriForTypeXdiAttributeSingleton = requestedXdiPeerRoot.getXdiAttributeSingleton(typeXdiArcXri, true).getXdiAttributeSingleton(XRI_SS_AC_URI, true);
+				XdiAttributeSingleton defaultUriForTypeXdiAttributeSingleton = requestedXdiPeerRoot.getXdiAttributeSingleton(typeXdiArcXri, true).getXdiAttributeSingleton(XRI_SS_AS_URI, true);
 				Equivalence.setReferenceContextNode(defaultUriForTypeXdiAttributeSingleton.getContextNode(), defaultUriForTypeXdiAttributeMember.getContextNode());
 			}
 		}
