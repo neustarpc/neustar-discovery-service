@@ -34,14 +34,14 @@ import xdi2.messaging.MessageResult;
 import xdi2.messaging.context.ExecutionContext;
 import xdi2.messaging.exceptions.Xdi2MessagingException;
 import xdi2.messaging.target.contributor.AbstractContributor;
+import xdi2.messaging.target.contributor.ContributorMount;
 import xdi2.messaging.target.contributor.ContributorResult;
-import xdi2.messaging.target.contributor.ContributorXri;
 import xdi2.messaging.target.interceptor.InterceptorResult;
 import xdi2.messaging.target.interceptor.MessageEnvelopeInterceptor;
 import biz.neustar.discovery.resolver.XRI2Resolver;
 import biz.neustar.discovery.resolver.XRI2XNSResolver;
 
-@ContributorXri(addresses={"{()}"})
+@ContributorMount(contributorXris={"{()}"})
 public class DiscoveryContributor extends AbstractContributor implements MessageEnvelopeInterceptor {
 
 	private static final Logger log = LoggerFactory.getLogger(DiscoveryContributor.class);
