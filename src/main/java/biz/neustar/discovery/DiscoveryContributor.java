@@ -190,6 +190,8 @@ public class DiscoveryContributor extends AbstractContributor implements Message
 
 			for (String uri : uriList) {
 
+				if (log.isDebugEnabled()) log.debug("Mapping URI " + uri + " for type XRI " + typeXdiArcXri);
+				
 				XDI3SubSegment uriXdiMemberUnorderedArcXri = XdiAbstractMemberUnordered.createDigestArcXri(uri, true);
 
 				XdiAttributeMember uriXdiAttributeMember = uriXdiAttributeCollection.setXdiMemberUnordered(uriXdiMemberUnorderedArcXri);
@@ -206,6 +208,8 @@ public class DiscoveryContributor extends AbstractContributor implements Message
 
 				String defaultUriForType = uriList.get(0);
 
+				if (log.isDebugEnabled()) log.debug("Mapping default URI " + defaultUriForType + " for type XRI " + typeXdiArcXri);
+
 				XDI3SubSegment defaultUriForTypeXdiMemberUnorderedArcXri = XdiAbstractMemberUnordered.createDigestArcXri(defaultUriForType, true);
 
 				XdiAttributeMember defaultUriForTypeXdiAttributeMember = uriXdiAttributeCollection.setXdiMemberUnordered(defaultUriForTypeXdiMemberUnorderedArcXri);
@@ -217,6 +221,8 @@ public class DiscoveryContributor extends AbstractContributor implements Message
 		// add default URI
 
 		if (defaultUri != null) {
+
+			if (log.isDebugEnabled()) log.debug("Mapping default URI " + defaultUri);
 
 			XDI3SubSegment defaultUriXdiMemberUnorderedArcXri = XdiAbstractMemberUnordered.createDigestArcXri(defaultUri, true);
 
