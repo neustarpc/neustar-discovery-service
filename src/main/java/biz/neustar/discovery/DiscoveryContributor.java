@@ -1,5 +1,6 @@
 package biz.neustar.discovery;
 
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -7,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.openxri.xml.CanonicalID;
 import org.openxri.xml.SEPType;
@@ -16,7 +19,10 @@ import org.openxri.xml.Status;
 import org.openxri.xml.XRD;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
 
+import xdi2.core.Graph;
 import xdi2.core.features.equivalence.Equivalence;
 import xdi2.core.features.nodetypes.XdiAbstractMemberUnordered;
 import xdi2.core.features.nodetypes.XdiAttributeCollection;
@@ -24,6 +30,8 @@ import xdi2.core.features.nodetypes.XdiAttributeMember;
 import xdi2.core.features.nodetypes.XdiAttributeSingleton;
 import xdi2.core.features.nodetypes.XdiLocalRoot;
 import xdi2.core.features.nodetypes.XdiPeerRoot;
+import xdi2.core.impl.memory.MemoryGraphFactory;
+import xdi2.core.util.CopyUtil;
 import xdi2.core.util.XRI2Util;
 import xdi2.core.xri3.CloudNumber;
 import xdi2.core.xri3.XDI3Segment;
@@ -162,6 +170,30 @@ public class DiscoveryContributor extends AbstractContributor implements Message
 
 		if (log.isDebugEnabled()) log.debug("Default URI: " + defaultUri);
 
+		// extract extension
+
+		String extensionXml = xrd.getExtension();
+		Graph extensionGraph;
+
+		try {
+
+			if (extensionXml != null) {
+
+				Document extensionDocument = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new InputSource(new StringReader(extensionXml)));
+				String extensionXdi = extensionDocument.getDocumentElement().getFirstChild().getTextContent();
+				
+				extensionGraph = MemoryGraphFactory.getInstance().parseGraph(extensionXdi, "XDI DISPLAY", null);
+			} else {
+				
+				extensionGraph = null;
+			}
+		} catch (Exception ex) {
+
+			throw new Xdi2MessagingException("Extension Problem: " + ex.getMessage(), ex, executionContext);
+		}
+
+		if (log.isDebugEnabled()) log.debug("Extension: " + extensionXml);
+
 		// prepare result graph
 
 		XdiPeerRoot requestedXdiPeerRoot = XdiPeerRoot.fromContextNode(messageResult.getGraph().setDeepContextNode(requestedXdiPeerRootXri));
@@ -174,7 +206,7 @@ public class DiscoveryContributor extends AbstractContributor implements Message
 
 			Equivalence.setReferenceContextNode(requestedXdiPeerRoot.getContextNode(), cloudNumberXdiPeerRoot.getContextNode());
 
-			return new ContributorResult(false, false, true);
+			return ContributorResult.SKIP_MESSAGING_TARGET;
 		}
 
 		// add all URIs for all types
@@ -191,7 +223,7 @@ public class DiscoveryContributor extends AbstractContributor implements Message
 			for (String uri : uriList) {
 
 				if (log.isDebugEnabled()) log.debug("Mapping URI " + uri + " for type XRI " + typeXdiArcXri);
-				
+
 				XDI3SubSegment uriXdiMemberUnorderedArcXri = XdiAbstractMemberUnordered.createDigestArcXri(uri, true);
 
 				XdiAttributeMember uriXdiAttributeMember = uriXdiAttributeCollection.setXdiMemberUnordered(uriXdiMemberUnorderedArcXri);
@@ -231,9 +263,16 @@ public class DiscoveryContributor extends AbstractContributor implements Message
 			Equivalence.setReferenceContextNode(defaultUriXdiAttributeSingleton.getContextNode(), defaultUriXdiAttributeMember.getContextNode());
 		}
 
+		// add extension
+
+		if (extensionGraph != null) {
+			
+			CopyUtil.copyGraph(extensionGraph, messageResult.getGraph(), null);
+		}
+
 		// done
 
-		return new ContributorResult(false, false, true);
+		return ContributorResult.SKIP_MESSAGING_TARGET;
 	}
 
 	/*
