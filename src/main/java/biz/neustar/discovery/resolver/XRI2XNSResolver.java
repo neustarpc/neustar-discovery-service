@@ -56,7 +56,7 @@ public class XRI2XNSResolver implements XRI2Resolver {
 		if (cachedXRD != null) {
 
 			if (log.isDebugEnabled()) log.debug("Getting cached XRD for " + resolveXri);
-			
+
 			return cachedXRD;
 		}
 
@@ -64,8 +64,20 @@ public class XRI2XNSResolver implements XRI2Resolver {
 
 		if (log.isDebugEnabled()) log.debug("Resolving XRD for " + resolveXri);
 
+		if (resolveXri.getFirstSubSegment().getCs() == null && 
+				resolveXri.getFirstSubSegment().hasXRef() && 
+				resolveXri.getFirstSubSegment().getXRef().hasSegment()) {
+
+			resolveXri = resolveXri.getFirstSubSegment().getXRef().getSegment();
+		}
+
 		if (XDIConstants.CS_EQUALS.equals(resolveXri.getFirstSubSegment().getCs())) endpointUrl = this.getEqualEndpointUrl();
 		if (XDIConstants.CS_AT.equals(resolveXri.getFirstSubSegment().getCs())) endpointUrl = this.getAtEndpointUrl();
+
+		if (endpointUrl == null) {
+
+			throw new IOException("Don't know how to resolve XRI: " + resolveXri);
+		}
 
 		if (resolveXri.toString().charAt(0) == '[') endpointUrl += resolveXri.toString().substring(3);
 		else if (resolveXri.toString().charAt(1) == '!') endpointUrl += resolveXri.toString().substring(1);
@@ -109,7 +121,7 @@ public class XRI2XNSResolver implements XRI2Resolver {
 		if (xrd == null) return null;
 
 		if (! Status.SUCCESS.equals(xrd.getStatusCode())) throw new IOException("" + xrd.getStatus().getCode() + " (" + xrd.getStatus().getText() + ")");
-		
+
 		try {
 
 			resolver.selectServiceFromXRD(new XRDS(), xrd, new XRI("="), null, null, new ResolverFlags(), new ResolverState());
