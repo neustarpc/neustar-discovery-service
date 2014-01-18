@@ -177,7 +177,7 @@ public class DiscoveryContributor extends AbstractContributor implements Message
 
 		try {
 
-			if (extensionXml != null) {
+			if (extensionXml != null && ! extensionXml.trim().isEmpty()) {
 
 				Document extensionDocument = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new InputSource(new StringReader(extensionXml)));
 				String extensionXdi = extensionDocument.getDocumentElement().getFirstChild().getTextContent();
@@ -192,7 +192,7 @@ public class DiscoveryContributor extends AbstractContributor implements Message
 			throw new Xdi2MessagingException("Extension Problem: " + ex.getMessage(), ex, executionContext);
 		}
 
-		if (log.isDebugEnabled()) log.debug("Extension: " + extensionXml);
+		if (log.isDebugEnabled()) log.debug("Extension: " + extensionGraph);
 
 		// prepare result graph
 
