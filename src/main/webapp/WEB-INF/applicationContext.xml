@@ -31,8 +31,8 @@
 	<bean name="discoveryContributor" class="biz.neustar.discovery.DiscoveryContributor">
 		<property name="resolver">
 			<bean class="biz.neustar.discovery.resolver.XRI2XNSResolver">
-				<property name="equalEndpointUrl" value="http://ote.equal.xri.net/"/>
-				<property name="atEndpointUrl" value="http://ote.equal.xri.net/"/>
+				<property name="equalEndpointUrl" value="http://equalote.xdi.net/"/>
+				<property name="atEndpointUrl" value="http://equalote.xdi.net/"/>
 			</bean>
 		</property>
 	</bean>
