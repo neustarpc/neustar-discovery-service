@@ -5,16 +5,14 @@
 
 	<!-- XDI ENDPOINT REGISTRY AND TRANSPORT -->
 
-	<bean id="HttpEndpointRegistry" class="xdi2.server.registry.HttpEndpointRegistry" init-method="init" destroy-method="shutdown" />
+	<bean id="HttpMessagingTargetRegistry" class="xdi2.transport.impl.http.registry.HttpMessagingTargetRegistry" init-method="init" destroy-method="shutdown" />
 
-	<bean id="HttpTransport" class="xdi2.server.transport.HttpTransport" init-method="init" destroy-method="shutdown">
-		<property name="httpEndpointRegistry" ref="HttpEndpointRegistry" />
+	<bean id="HttpTransport" class="xdi2.transport.impl.http.HttpTransport" init-method="init" destroy-method="shutdown">
+		<property name="httpMessagingTargetRegistry" ref="HttpMessagingTargetRegistry" />
 		<property name="interceptors">
 			<util:list>
-				<bean class="xdi2.server.interceptor.impl.DebugHttpTransportInterceptor" />
-				<bean class="biz.neustar.discovery.DiscoveryHttpTransportInterceptor">
-					<property name="proxy" ref="proxy" />
-				</bean>
+				<bean class="xdi2.transport.impl.http.interceptor.impl.DebugHttpTransportInterceptor" />
+				<bean class="xdi2.transport.impl.http.interceptor.impl.StatusHttpTransportInterceptor" />
 			</util:list>
 		</property>
 	</bean>
@@ -24,30 +22,26 @@
 	<bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean">
 		<property name="converters">
 			<list>
-				<bean class="xdi2.server.spring.XDI2SpringConverter" />
+				<bean class="xdi2.transport.spring.XDI2SpringConverter" />
 			</list>
 		</property>
-	</bean>
-
-	<!-- OPENXRI PROXY -->
-
-	<bean id="proxy" class="org.openxri.proxy.impl.BasicProxy" init-method="init" destroy-method="shutdown">
-		<constructor-arg><ref bean="proxyConfig" /></constructor-arg> 
-	</bean>
-	
-	<bean id="proxyConfig" class="org.openxri.config.impl.PropertiesProxyConfig">
-		<constructor-arg><util:properties location="/WEB-INF/proxy.properties" /></constructor-arg>
 	</bean>
 
 	<!-- DISCOVERY MESSAGING TARGET -->
 
 	<bean name="discoveryContributor" class="biz.neustar.discovery.DiscoveryContributor">
-		<property name="proxy" ref="proxy" />
+		<property name="resolver">
+			<bean class="biz.neustar.discovery.resolver.XRI2XNSResolver">
+				<property name="equalEndpointUrl" value="http://equal.xdi.net/"/>
+				<property name="atEndpointUrl" value="http://equal.xdi.net/"/>
+			</bean>
+		</property>
 	</bean>
 
 	<bean name="/" class="xdi2.messaging.target.impl.n.NullMessagingTarget">
 		<property name="interceptors">
 			<util:list>
+				<ref bean="discoveryContributor" />
 				<bean class="xdi2.messaging.target.interceptor.impl.RefInterceptor" />
 			</util:list>
 		</property>

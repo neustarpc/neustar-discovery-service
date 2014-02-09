@@ -124,34 +124,10 @@
 		</dependency>
 		<dependency>
 			<groupId>org.openxri</groupId>
-			<artifactId>openxri-server-logic</artifactId>
-			<version>1.2.2-SNAPSHOT</version>
+			<artifactId>openxri-client</artifactId>
+			<version>1.2.2</version>
 			<scope>compile</scope>
 			<exclusions>
-				<exclusion>
-					<groupId>javax.servlet</groupId>
-					<artifactId>servlet-api</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>javax.transaction</groupId>
-					<artifactId>jta</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.hibernate</groupId>
-					<artifactId>hibernate</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>mysql</groupId>
-					<artifactId>mysql-connector-java</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>hsqldb</groupId>
-					<artifactId>hsqldb</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.apache.derby</groupId>
-					<artifactId>derby</artifactId>
-				</exclusion>
 				<exclusion>
 					<groupId>org.slf4j</groupId>
 					<artifactId>slf4j-jcl</artifactId>
@@ -245,13 +221,13 @@
 				<dependency>
 					<groupId>xdi2</groupId>
 					<artifactId>xdi2-client</artifactId>
-					<version>0.1-SNAPSHOT</version>
+					<version>0.2-SNAPSHOT</version>
 					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>xdi2</groupId>
-					<artifactId>xdi2-server</artifactId>
-					<version>0.1-SNAPSHOT</version>
+					<artifactId>xdi2-transport-http</artifactId>
+					<version>0.2-SNAPSHOT</version>
 					<scope>compile</scope>
 				</dependency>
 			</dependencies>
@@ -314,13 +290,13 @@
 				<dependency>
 					<groupId>xdi2</groupId>
 					<artifactId>xdi2-client</artifactId>
-					<version>0.1-SNAPSHOT</version>
+					<version>0.2-SNAPSHOT</version>
 					<scope>provided</scope>
 				</dependency>
 				<dependency>
 					<groupId>xdi2</groupId>
-					<artifactId>xdi2-server</artifactId>
-					<version>0.1-SNAPSHOT</version>
+					<artifactId>xdi2-transport-http</artifactId>
+					<version>0.2-SNAPSHOT</version>
 					<scope>provided</scope>
 				</dependency>
 			</dependencies>
