@@ -11,8 +11,12 @@
 		<property name="httpMessagingTargetRegistry" ref="HttpMessagingTargetRegistry" />
 		<property name="interceptors">
 			<util:list>
-				<bean class="xdi2.transport.impl.http.interceptor.impl.DebugHttpTransportInterceptor" />
-				<bean class="xdi2.transport.impl.http.interceptor.impl.StatusHttpTransportInterceptor" />
+				<bean class="xdi2.transport.impl.http.interceptor.impl.DebugHttpTransportInterceptor">
+					<property name="path" value="/admin" />
+				</bean>
+				<bean class="xdi2.transport.impl.http.interceptor.impl.StatusHttpTransportInterceptor">
+					<property name="path" value="/status" />
+				</bean>
 			</util:list>
 		</property>
 	</bean>
