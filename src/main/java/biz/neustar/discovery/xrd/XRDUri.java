@@ -5,6 +5,12 @@ public class XRDUri {
 	private String uri;
 	private Integer priority;
 
+	public XRDUri(String uri, Integer priority) {
+
+		this.uri = uri;
+		this.priority = priority;
+	}
+
 	public String getUri() {
 
 		return this.uri;

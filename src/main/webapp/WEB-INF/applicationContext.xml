@@ -32,8 +32,8 @@
 	<bean name="discoveryContributor" class="biz.neustar.discovery.DiscoveryContributor">
 		<property name="resolver">
 			<bean class="biz.neustar.discovery.resolver.XRI2XNSResolver">
-				<property name="equalEndpointUrl" value="http://equalote.xdi.net/"/>
-				<property name="atEndpointUrl" value="http://equalote.xdi.net/"/>
+				<property name="authorityPersonalEndpointUrl" value="http://equalote.xdi.net/"/>
+				<property name="authorityLegalEndpointUrl" value="http://plusote.xdi.net/"/>
 			</bean>
 		</property>
 	</bean>

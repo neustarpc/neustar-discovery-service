@@ -18,8 +18,8 @@ public class XRI2XNSResolver implements XRI2Resolver {
 
 	protected static final Logger log = LoggerFactory.getLogger(XRI2XNSResolver.class);
 
-	private String equalEndpointUrl;
-	private String atEndpointUrl;
+	private String authorityPersonalEndpointUrl;
+	private String authorityLegalEndpointUrl;
 
 	private Map<XDI3Segment, XRD> cache = new HashMap<XDI3Segment, XRD> ();
 
@@ -55,8 +55,8 @@ public class XRI2XNSResolver implements XRI2Resolver {
 			resolveXri = resolveXri.getFirstSubSegment().getXRef().getSegment();
 		}
 
-		if (XDIConstants.CS_EQUALS.equals(resolveXri.getFirstSubSegment().getCs())) endpointUrl = this.getEqualEndpointUrl();
-		if (XDIConstants.CS_AT.equals(resolveXri.getFirstSubSegment().getCs())) endpointUrl = this.getAtEndpointUrl();
+		if (XDIConstants.CS_AUTHORITY_PERSONAL.equals(resolveXri.getFirstSubSegment().getCs())) endpointUrl = this.getAuthorityPersonalEndpointUrl();
+		if (XDIConstants.CS_AUTHORITY_LEGAL.equals(resolveXri.getFirstSubSegment().getCs())) endpointUrl = this.getAuthorityLegalEndpointUrl();
 
 		if (endpointUrl == null) {
 
@@ -102,23 +102,23 @@ public class XRI2XNSResolver implements XRI2Resolver {
 	 * Getters and setters
 	 */
 
-	public String getEqualEndpointUrl() {
+	public String getAuthorityPersonalEndpointUrl() {
 
-		return this.equalEndpointUrl;
+		return this.authorityPersonalEndpointUrl;
 	}
 
-	public void setEqualEndpointUrl(String equalEndpointUrl) {
+	public void setAuthorityPersonalEndpointUrl(String authorityPersonalEndpointUrl) {
 
-		this.equalEndpointUrl = equalEndpointUrl;
+		this.authorityPersonalEndpointUrl = authorityPersonalEndpointUrl;
 	}
 
-	public String getAtEndpointUrl() {
+	public String getAuthorityLegalEndpointUrl() {
 
-		return this.atEndpointUrl;
+		return this.authorityLegalEndpointUrl;
 	}
 
-	public void setAtEndpointUrl(String atEndpointUrl) {
+	public void setAuthorityLegalEndpointUrl(String authorityLegalEndpointUrl) {
 
-		this.atEndpointUrl = atEndpointUrl;
+		this.authorityLegalEndpointUrl = authorityLegalEndpointUrl;
 	}
 }

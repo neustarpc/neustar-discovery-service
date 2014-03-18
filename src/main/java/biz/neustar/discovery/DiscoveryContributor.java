@@ -97,13 +97,13 @@ public class DiscoveryContributor extends AbstractContributor implements Message
 
 		// extract cloud number
 
-		String canonicalID = xrd.getCanonicalID();
-		if (canonicalID == null) throw new Xdi2MessagingException("Unable to read CanonicalID from XRD.", null, executionContext);
+		String canonicalId = xrd.getCanonicalId();
+		if (canonicalId == null) throw new Xdi2MessagingException("Unable to read CanonicalId from XRD.", null, executionContext);
 
-		String iNumber = canonicalID;
+		String iNumber = canonicalId;
 		CloudNumber cloudNumber = XRI2Util.iNumberToCloudNumber(iNumber);
 		if (cloudNumber == null) cloudNumber = CloudNumber.create(iNumber);
-		if (cloudNumber == null) throw new Xdi2MessagingException("Unable to read Cloud Number from CanonicalID: " + canonicalID, null, executionContext);
+		if (cloudNumber == null) throw new Xdi2MessagingException("Unable to read Cloud Number from CanonicalId: " + canonicalId, null, executionContext);
 
 		if (log.isDebugEnabled()) log.debug("Cloud Number: " + cloudNumber);
 
