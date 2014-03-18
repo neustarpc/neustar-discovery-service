@@ -1,8 +1,7 @@
 package biz.neustar.discovery.resolver;
 
-import org.openxri.xml.XRD;
-
 import xdi2.core.xri3.XDI3Segment;
+import biz.neustar.discovery.xrd.XRD;
 
 public interface XRI2Resolver {
 

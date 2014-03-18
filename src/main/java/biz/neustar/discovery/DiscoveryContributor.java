@@ -11,12 +11,6 @@ import java.util.Map.Entry;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.openxri.xml.CanonicalID;
-import org.openxri.xml.SEPType;
-import org.openxri.xml.SEPUri;
-import org.openxri.xml.Service;
-import org.openxri.xml.Status;
-import org.openxri.xml.XRD;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -48,6 +42,10 @@ import xdi2.messaging.target.interceptor.InterceptorResult;
 import xdi2.messaging.target.interceptor.MessageEnvelopeInterceptor;
 import biz.neustar.discovery.resolver.XRI2Resolver;
 import biz.neustar.discovery.resolver.XRI2XNSResolver;
+import biz.neustar.discovery.xrd.XRD;
+import biz.neustar.discovery.xrd.XRDService;
+import biz.neustar.discovery.xrd.XRDType;
+import biz.neustar.discovery.xrd.XRDUri;
 
 @ContributorMount(contributorXris={"{()}"})
 public class DiscoveryContributor extends AbstractContributor implements MessageEnvelopeInterceptor {
@@ -90,22 +88,22 @@ public class DiscoveryContributor extends AbstractContributor implements Message
 
 		if (log.isDebugEnabled()) log.debug("XRD: " + xrd);
 
-		if (log.isDebugEnabled()) log.debug("XRD Status: " + xrd.getStatus().getCode());
+		if (log.isDebugEnabled()) log.debug("XRD Status: " + xrd.getStatus());
 
-		if ((! Status.SUCCESS.equals(xrd.getStatusCode())) && (! Status.SEP_NOT_FOUND.equals(xrd.getStatusCode()))) {
+		if ((! XRD.STATUS_SUCCESS.equals(xrd.getStatus())) && (! XRD.STATUS_SEP_NOT_FOUND.equals(xrd.getStatus()))) {
 
-			throw new Xdi2MessagingException("XRI Resolution 2.0 Status Problem: " + xrd.getStatusCode() + " (" + xrd.getStatus().getValue() + ")", null, executionContext);
+			throw new Xdi2MessagingException("XRI Resolution 2.0 Status Problem: " + xrd.getStatus(), null, executionContext);
 		}
 
 		// extract cloud number
 
-		CanonicalID canonicalID = xrd.getCanonicalID();
+		String canonicalID = xrd.getCanonicalID();
 		if (canonicalID == null) throw new Xdi2MessagingException("Unable to read CanonicalID from XRD.", null, executionContext);
 
-		String iNumber = canonicalID.getValue();
+		String iNumber = canonicalID;
 		CloudNumber cloudNumber = XRI2Util.iNumberToCloudNumber(iNumber);
 		if (cloudNumber == null) cloudNumber = CloudNumber.create(iNumber);
-		if (cloudNumber == null) throw new Xdi2MessagingException("Unable to read Cloud Number from CanonicalID: " + xrd.getCanonicalID().getValue(), null, executionContext);
+		if (cloudNumber == null) throw new Xdi2MessagingException("Unable to read Cloud Number from CanonicalID: " + canonicalID, null, executionContext);
 
 		if (log.isDebugEnabled()) log.debug("Cloud Number: " + cloudNumber);
 
@@ -113,15 +111,11 @@ public class DiscoveryContributor extends AbstractContributor implements Message
 
 		Map<String, List<String>> uriMap = new HashMap<String, List<String>> ();
 
-		for (int i=0; i<xrd.getNumServices(); i++) {
+		for (XRDService service : xrd.getServices()) {
 
-			Service service = xrd.getServiceAt(i);
-			if (service.getNumTypes() == 0) continue;
+			for (XRDType type : service.getTypes()) {
 
-			for (int ii=0; ii<service.getNumTypes(); ii++) {
-
-				SEPType type = service.getTypeAt(ii);
-				if (type == null || type.getType() == null || type.getType().trim().isEmpty()) continue;
+				if (type.getType() == null || type.getType().trim().isEmpty()) continue;
 
 				List<String> uriList = uriMap.get(type.getType());
 
@@ -131,14 +125,14 @@ public class DiscoveryContributor extends AbstractContributor implements Message
 					uriMap.put(type.getType(), uriList);
 				}
 
-				List<?> uris = service.getURIs();
+				List<XRDUri> uris = service.getUris();
 				Collections.sort(uris, new Comparator<Object> () {
 
 					@Override
 					public int compare(Object uri1, Object uri2) {
 
-						Integer priority1 = ((SEPUri) uri1).getPriority();
-						Integer priority2 = ((SEPUri) uri2).getPriority();
+						Integer priority1 = ((XRDUri) uri1).getPriority();
+						Integer priority2 = ((XRDUri) uri2).getPriority();
 
 						if (priority1 == null && priority2 == null) return 0;
 						if (priority1 == null && priority2 != null) return 1;
@@ -150,12 +144,11 @@ public class DiscoveryContributor extends AbstractContributor implements Message
 					}
 				});
 
-				for (int iii = 0; iii<uris.size(); iii++) {
+				for (XRDUri uri : service.getUris()) {
 
-					SEPUri uri = (SEPUri) uris.get(iii);
-					if (uri == null || uri.getUriString() == null || uri.getUriString().trim().isEmpty()) continue;
+					if (uri.getUri() == null || uri.getUri().trim().isEmpty()) continue;
 
-					uriList.add(uri.getUriString());
+					uriList.add(uri.getUri());
 				}
 			}
 		}
@@ -164,9 +157,8 @@ public class DiscoveryContributor extends AbstractContributor implements Message
 
 		// extract default URI
 
-		List<?> list = xrd.getSelectedServices().getList();
-		Service defaultUriService = list.size() > 0 ? (Service) list.get(0) : null;
-		String defaultUri = defaultUriService == null ? null : defaultUriService.getURIAt(0).getUriString();
+		XRDService defaultUriService = xrd.getDefaultService();
+		String defaultUri = defaultUriService == null ? null : defaultUriService.getUris().get(0).getUri();
 
 		if (log.isDebugEnabled()) log.debug("Default URI: " + defaultUri);
 

@@ -1,34 +1,18 @@
 package biz.neustar.discovery.resolver;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.xerces.parsers.DOMParser;
-import org.openxri.XRI;
-import org.openxri.resolve.Resolver;
-import org.openxri.resolve.ResolverFlags;
-import org.openxri.resolve.ResolverState;
-import org.openxri.resolve.exception.PartialResolutionException;
-import org.openxri.util.DOMUtils;
-import org.openxri.xml.Status;
-import org.openxri.xml.XRD;
-import org.openxri.xml.XRDS;
+import org.dom4j.DocumentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 import xdi2.core.constants.XDIConstants;
 import xdi2.core.xri3.XDI3Segment;
+import biz.neustar.discovery.xrd.XRD;
 
 public class XRI2XNSResolver implements XRI2Resolver {
 
@@ -45,7 +29,7 @@ public class XRI2XNSResolver implements XRI2Resolver {
 	}
 
 	@Override
-	public XRD resolve(XDI3Segment resolveXri) throws MalformedURLException, IOException, SAXException, URISyntaxException, ParseException, PartialResolutionException {
+	public XRD resolve(XDI3Segment resolveXri) throws IOException, DocumentException {
 
 		String endpointUrl = null;
 
@@ -99,36 +83,11 @@ public class XRI2XNSResolver implements XRI2Resolver {
 			throw new IOException("HTTP code " + responseCode + " received: " + responseMessage, null);
 		}
 
-		// read the response
+		// read the XRD
 
-		InputStream inputStream = connection.getInputStream();
-		DOMParser domParser = DOMUtils.getDOMParser();
-		domParser.parse(new InputSource(inputStream));
-		Document domDoc = domParser.getDocument();
-		Element oElement = domDoc.getDocumentElement();
+		XRD xrd = XRD.read(connection.getInputStream());
 
 		connection.disconnect();
-
-		// construct XRD
-
-		Resolver resolver = new Resolver();
-
-		XRDS xrds = new XRDS();
-		XRD xrd;
-
-		xrds.fromDOM(oElement, false);
-		xrd = xrds.getFinalXRD();
-		if (xrd == null) return null;
-
-		if (! Status.SUCCESS.equals(xrd.getStatusCode())) throw new IOException("" + xrd.getStatus().getCode() + " (" + xrd.getStatus().getText() + ")");
-
-		try {
-
-			resolver.selectServiceFromXRD(new XRDS(), xrd, new XRI("="), null, null, new ResolverFlags(), new ResolverState());
-		} catch (PartialResolutionException ex) { 
-
-			if (log.isDebugEnabled()) log.debug("No default SEP for " + resolveXri);
-		}
 
 		// cache
 

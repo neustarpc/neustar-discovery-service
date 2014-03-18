@@ -123,28 +123,10 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.openxri</groupId>
-			<artifactId>openxri-client</artifactId>
-			<version>1.2.2</version>
+			<groupId>dom4j</groupId>
+			<artifactId>dom4j</artifactId>
+			<version>1.6.1</version>
 			<scope>compile</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>org.slf4j</groupId>
-					<artifactId>slf4j-jcl</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>log4j</groupId>
-					<artifactId>log4j</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>commons-collections</groupId>
-					<artifactId>commons-collections</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>commons-codec</groupId>
-					<artifactId>commons-codec</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 	</dependencies>
 
