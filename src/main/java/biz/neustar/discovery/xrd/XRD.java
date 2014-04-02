@@ -103,7 +103,7 @@ public class XRD {
 
 		Element extensionElement = xrdElement.element(QNAME_XDI);
 
-		extension = extensionElement == null ? null : extensionElement.getTextTrim();
+		extension = extensionElement == null ? null : extensionElement.getText();
 
 		// read services
 

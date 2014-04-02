@@ -1,6 +1,5 @@
 package biz.neustar.discovery;
 
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -9,12 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.xml.parsers.DocumentBuilderFactory;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
 
 import xdi2.core.Graph;
 import xdi2.core.features.equivalence.Equivalence;
@@ -164,17 +159,14 @@ public class DiscoveryContributor extends AbstractContributor implements Message
 
 		// extract extension
 
-		String extensionXml = xrd.getExtension();
+		String extension = xrd.getExtension();
 		Graph extensionGraph;
 
 		try {
 
-			if (extensionXml != null && ! extensionXml.trim().isEmpty()) {
+			if (extension != null && ! extension.trim().isEmpty()) {
 
-				Document extensionDocument = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new InputSource(new StringReader(extensionXml)));
-				String extensionXdi = extensionDocument.getDocumentElement().getFirstChild().getTextContent();
-				
-				extensionGraph = MemoryGraphFactory.getInstance().parseGraph(extensionXdi, "XDI DISPLAY", null);
+				extensionGraph = MemoryGraphFactory.getInstance().parseGraph(extension, "XDI DISPLAY", null);
 			} else {
 				
 				extensionGraph = null;
