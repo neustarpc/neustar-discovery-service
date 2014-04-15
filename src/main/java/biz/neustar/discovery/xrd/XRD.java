@@ -29,40 +29,22 @@ public class XRD {
 	public static final QName QNAME_URI_PRIORITY = QName.get("priority");
 	public static final QName QNAME_XDI = QName.get("xdi", Namespace.get("xri://$xdi"));
 
+	private Document document;
 	private String status;
 	private String canonicalId;
 	private String extension;
 	private List<XRDService> services;
 	private XRDService defaultService;
 
-	public XRD(String status, String canonicalId, String extension, List<XRDService> services, XRDService defaultService) {
+	private XRD(Document document, String status, String canonicalId, String extension, List<XRDService> services, XRDService defaultService) {
 
+		this.document = document;
 		this.status = status;
 		this.canonicalId = canonicalId;
 		this.extension = extension;
 		this.services = services;
 		this.defaultService = defaultService;
 	}
-
-	/*
-	 * 
-	 * 
-
-<?xml version="1.0" encoding="UTF-8"?>
-<XRDS xmlns="xri://$xrds" ref="xri://=alice">
-<XRD xmlns="xri://$xrd*($v*2.0)" version="2.0" >
-<Query>*alice</Query><Status code="100"/>
-<Expires>2014-03-18T20:37:47Z</Expires>
-<ProviderID>xri://=</ProviderID><LocalID>!:UUID:06D1EF2B-5499-401A-AC88-89F637F83803</LocalID><CanonicalID>[=]!:UUID:06D1EF2B-5499-401A-AC88-89F637F83803</CanonicalID><Service priority="10"><Type select="false">&lt;$xdi&gt;</Type><URI>http://mycloud-ote.neustar.biz:14440/users/%5B%3D%5D%21%3Auuid%3A06d1ef2b-5499-401a-ac88-89f637f83803</URI></Service></XRD>
-</XRDS>
-
-
-
-	 * 
-	 * 
-	 * 
-	 */
-
 
 	@SuppressWarnings("unchecked")
 	public static XRD read(InputStream inputStream) throws DocumentException {
@@ -101,7 +83,7 @@ public class XRD {
 
 			canonicalId = canonicalIdElement.getTextTrim();
 		} else {
-			
+
 			canonicalId = null;
 		}
 
@@ -110,10 +92,10 @@ public class XRD {
 		Element extensionElement = xrdElement.element(QNAME_XDI);
 
 		if (extensionElement != null) {
-			
+
 			extension = extensionElement.getText();
 		} else {
-			
+
 			extension = null;
 		}
 
@@ -156,8 +138,22 @@ public class XRD {
 
 		// done
 
-		return new XRD(status, canonicalId, extension, services, defaultService);
+		return new XRD(document, status, canonicalId, extension, services, defaultService);
 	}
+
+	/*
+	 * Object methods
+	 */
+
+	@Override
+	public String toString() {
+
+		return this.document.asXML();
+	}
+
+	/*
+	 * Getters and setters
+	 */
 
 	public String getStatus() {
 
