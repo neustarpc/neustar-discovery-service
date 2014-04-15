@@ -85,6 +85,11 @@ public class DiscoveryContributor extends AbstractContributor implements Message
 
 		if (log.isDebugEnabled()) log.debug("XRD Status: " + xrd.getStatus());
 
+		if (XRD.STATUS_QUERY_NOT_FOUND.equals(xrd.getStatus())) {
+
+			return ContributorResult.DEFAULT;
+		}
+
 		if ((! XRD.STATUS_SUCCESS.equals(xrd.getStatus())) && (! XRD.STATUS_SEP_NOT_FOUND.equals(xrd.getStatus()))) {
 
 			throw new Xdi2MessagingException("XRI Resolution 2.0 Status Problem: " + xrd.getStatus(), null, executionContext);

@@ -15,6 +15,7 @@ import org.dom4j.io.SAXReader;
 public class XRD {
 
 	public static final String STATUS_SUCCESS = "100";
+	public static final String STATUS_QUERY_NOT_FOUND = "222";
 	public static final String STATUS_SEP_NOT_FOUND = "241";
 
 	public static final QName QNAME_XRDS = QName.get("XRDS", Namespace.get("xri://$xrds"));
@@ -95,15 +96,26 @@ public class XRD {
 		// read canonicalId
 
 		Element canonicalIdElement = xrdElement.element(QNAME_CANONICALID);
-		if (canonicalIdElement == null) throw new DocumentException("Cannot find element: " + QNAME_CANONICALID);
 
-		canonicalId = canonicalIdElement.getTextTrim();
+		if (canonicalIdElement != null) {
+
+			canonicalId = canonicalIdElement.getTextTrim();
+		} else {
+			
+			canonicalId = null;
+		}
 
 		// read extension
 
 		Element extensionElement = xrdElement.element(QNAME_XDI);
 
-		extension = extensionElement == null ? null : extensionElement.getText();
+		if (extensionElement != null) {
+			
+			extension = extensionElement.getText();
+		} else {
+			
+			extension = null;
+		}
 
 		// read services
 
