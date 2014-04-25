@@ -221,13 +221,13 @@
 				<dependency>
 					<groupId>xdi2</groupId>
 					<artifactId>xdi2-client</artifactId>
-					<version>0.2-SNAPSHOT</version>
+					<version>0.2</version>
 					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>xdi2</groupId>
 					<artifactId>xdi2-transport-http</artifactId>
-					<version>0.2-SNAPSHOT</version>
+					<version>0.2</version>
 					<scope>compile</scope>
 				</dependency>
 			</dependencies>
@@ -290,13 +290,13 @@
 				<dependency>
 					<groupId>xdi2</groupId>
 					<artifactId>xdi2-client</artifactId>
-					<version>0.2-SNAPSHOT</version>
+					<version>0.2</version>
 					<scope>provided</scope>
 				</dependency>
 				<dependency>
 					<groupId>xdi2</groupId>
 					<artifactId>xdi2-transport-http</artifactId>
-					<version>0.2-SNAPSHOT</version>
+					<version>0.2</version>
 					<scope>provided</scope>
 				</dependency>
 			</dependencies>
