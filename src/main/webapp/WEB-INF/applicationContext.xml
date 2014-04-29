@@ -11,9 +11,7 @@
 		<property name="httpMessagingTargetRegistry" ref="HttpMessagingTargetRegistry" />
 		<property name="interceptors">
 			<util:list>
-				<bean class="xdi2.transport.impl.http.interceptor.impl.DebugHttpTransportInterceptor">
-					<property name="path" value="/admin" />
-				</bean>
+				
 				<bean class="xdi2.transport.impl.http.interceptor.impl.StatusHttpTransportInterceptor">
 					<property name="path" value="/status" />
 				</bean>
@@ -36,8 +34,8 @@
 	<bean name="discoveryContributor" class="biz.neustar.discovery.DiscoveryContributor">
 		<property name="resolver">
 			<bean class="biz.neustar.discovery.resolver.XRI2XNSResolver">
-				<property name="equalEndpointUrl" value="http://equal.xdi.net/"/>
-				<property name="atEndpointUrl" value="http://equal.xdi.net/"/>
+				<property name="authorityPersonalEndpointUrl" value="http://equal.xdi.net/"/>
+				<property name="authorityLegalEndpointUrl" value="http://plus.xdi.net/"/>
 			</bean>
 		</property>
 	</bean>
