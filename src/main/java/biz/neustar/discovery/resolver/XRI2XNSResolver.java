@@ -1,41 +1,25 @@
 package biz.neustar.discovery.resolver;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.xerces.parsers.DOMParser;
-import org.openxri.XRI;
-import org.openxri.resolve.Resolver;
-import org.openxri.resolve.ResolverFlags;
-import org.openxri.resolve.ResolverState;
-import org.openxri.resolve.exception.PartialResolutionException;
-import org.openxri.util.DOMUtils;
-import org.openxri.xml.Status;
-import org.openxri.xml.XRD;
-import org.openxri.xml.XRDS;
+import org.dom4j.DocumentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 import xdi2.core.constants.XDIConstants;
 import xdi2.core.xri3.XDI3Segment;
+import biz.neustar.discovery.xrd.XRD;
 
 public class XRI2XNSResolver implements XRI2Resolver {
 
 	protected static final Logger log = LoggerFactory.getLogger(XRI2XNSResolver.class);
 
-	private String equalEndpointUrl;
-	private String atEndpointUrl;
+	private String authorityPersonalEndpointUrl;
+	private String authorityLegalEndpointUrl;
 
 	private Map<XDI3Segment, XRD> cache = new HashMap<XDI3Segment, XRD> ();
 
@@ -45,7 +29,7 @@ public class XRI2XNSResolver implements XRI2Resolver {
 	}
 
 	@Override
-	public XRD resolve(XDI3Segment resolveXri) throws MalformedURLException, IOException, SAXException, URISyntaxException, ParseException, PartialResolutionException {
+	public XRD resolve(XDI3Segment resolveXri) throws IOException, DocumentException {
 
 		String endpointUrl = null;
 
@@ -71,8 +55,8 @@ public class XRI2XNSResolver implements XRI2Resolver {
 			resolveXri = resolveXri.getFirstSubSegment().getXRef().getSegment();
 		}
 
-		if (XDIConstants.CS_EQUALS.equals(resolveXri.getFirstSubSegment().getCs())) endpointUrl = this.getEqualEndpointUrl();
-		if (XDIConstants.CS_AT.equals(resolveXri.getFirstSubSegment().getCs())) endpointUrl = this.getAtEndpointUrl();
+		if (XDIConstants.CS_AUTHORITY_PERSONAL.equals(resolveXri.getFirstSubSegment().getCs())) endpointUrl = this.getAuthorityPersonalEndpointUrl();
+		if (XDIConstants.CS_AUTHORITY_LEGAL.equals(resolveXri.getFirstSubSegment().getCs())) endpointUrl = this.getAuthorityLegalEndpointUrl();
 
 		if (endpointUrl == null) {
 
@@ -99,36 +83,11 @@ public class XRI2XNSResolver implements XRI2Resolver {
 			throw new IOException("HTTP code " + responseCode + " received: " + responseMessage, null);
 		}
 
-		// read the response
+		// read the XRD
 
-		InputStream inputStream = connection.getInputStream();
-		DOMParser domParser = DOMUtils.getDOMParser();
-		domParser.parse(new InputSource(inputStream));
-		Document domDoc = domParser.getDocument();
-		Element oElement = domDoc.getDocumentElement();
+		XRD xrd = XRD.read(connection.getInputStream());
 
 		connection.disconnect();
-
-		// construct XRD
-
-		Resolver resolver = new Resolver();
-
-		XRDS xrds = new XRDS();
-		XRD xrd;
-
-		xrds.fromDOM(oElement, false);
-		xrd = xrds.getFinalXRD();
-		if (xrd == null) return null;
-
-		if (! Status.SUCCESS.equals(xrd.getStatusCode())) throw new IOException("" + xrd.getStatus().getCode() + " (" + xrd.getStatus().getText() + ")");
-
-		try {
-
-			resolver.selectServiceFromXRD(new XRDS(), xrd, new XRI("="), null, null, new ResolverFlags(), new ResolverState());
-		} catch (PartialResolutionException ex) { 
-
-			if (log.isDebugEnabled()) log.debug("No default SEP for " + resolveXri);
-		}
 
 		// cache
 
@@ -143,23 +102,23 @@ public class XRI2XNSResolver implements XRI2Resolver {
 	 * Getters and setters
 	 */
 
-	public String getEqualEndpointUrl() {
+	public String getAuthorityPersonalEndpointUrl() {
 
-		return this.equalEndpointUrl;
+		return this.authorityPersonalEndpointUrl;
 	}
 
-	public void setEqualEndpointUrl(String equalEndpointUrl) {
+	public void setAuthorityPersonalEndpointUrl(String authorityPersonalEndpointUrl) {
 
-		this.equalEndpointUrl = equalEndpointUrl;
+		this.authorityPersonalEndpointUrl = authorityPersonalEndpointUrl;
 	}
 
-	public String getAtEndpointUrl() {
+	public String getAuthorityLegalEndpointUrl() {
 
-		return this.atEndpointUrl;
+		return this.authorityLegalEndpointUrl;
 	}
 
-	public void setAtEndpointUrl(String atEndpointUrl) {
+	public void setAuthorityLegalEndpointUrl(String authorityLegalEndpointUrl) {
 
-		this.atEndpointUrl = atEndpointUrl;
+		this.authorityLegalEndpointUrl = authorityLegalEndpointUrl;
 	}
 }
