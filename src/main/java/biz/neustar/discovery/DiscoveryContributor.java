@@ -170,10 +170,9 @@ public class DiscoveryContributor extends AbstractContributor implements Message
 		try {
 
 			if (extension != null && ! extension.trim().isEmpty()) {
-
 				extensionGraph = MemoryGraphFactory.getInstance().parseGraph(extension, "XDI DISPLAY", null);
 			} else {
-				
+
 				extensionGraph = null;
 			}
 		} catch (Exception ex) {
@@ -255,7 +254,7 @@ public class DiscoveryContributor extends AbstractContributor implements Message
 		// add extension
 
 		if (extensionGraph != null) {
-			
+
 			CopyUtil.copyGraph(extensionGraph, messageResult.getGraph(), null);
 		}
 
