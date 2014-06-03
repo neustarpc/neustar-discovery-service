@@ -5,7 +5,7 @@
 	<groupId>biz.neustar</groupId>
 	<artifactId>neustar-discovery-service</artifactId>
 	<packaging>${packaging.type}</packaging>
-	<version>0.3</version>
+	<version>0.4</version>
 	<name>neustar-discovery-service</name>
 
 	<issueManagement>
