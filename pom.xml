@@ -5,7 +5,7 @@
 	<groupId>biz.neustar</groupId>
 	<artifactId>neustar-discovery-service</artifactId>
 	<packaging>${packaging.type}</packaging>
-	<version>0.4</version>
+	<version>0.5</version>
 	<name>neustar-discovery-service</name>
 
 	<issueManagement>
@@ -203,13 +203,13 @@
 				<dependency>
 					<groupId>xdi2</groupId>
 					<artifactId>xdi2-client</artifactId>
-					<version>0.4</version>
+					<version>0.5</version>
 					<scope>compile</scope>
 				</dependency>
 				<dependency>
 					<groupId>xdi2</groupId>
 					<artifactId>xdi2-transport-http</artifactId>
-					<version>0.4</version>
+					<version>0.5</version>
 					<scope>compile</scope>
 				</dependency>
 			</dependencies>
@@ -272,13 +272,13 @@
 				<dependency>
 					<groupId>xdi2</groupId>
 					<artifactId>xdi2-client</artifactId>
-					<version>0.4</version>
+					<version>0.5</version>
 					<scope>provided</scope>
 				</dependency>
 				<dependency>
 					<groupId>xdi2</groupId>
 					<artifactId>xdi2-transport-http</artifactId>
-					<version>0.4</version>
+					<version>0.5</version>
 					<scope>provided</scope>
 				</dependency>
 			</dependencies>
