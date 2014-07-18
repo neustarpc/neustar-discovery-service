@@ -190,7 +190,7 @@ public class DiscoveryContributor extends AbstractContributor implements Message
 
 		if (! cloudNumber.getXri().equals(requestedXdiPeerRoot.getXriOfPeerRoot())) {
 
-			XdiPeerRoot cloudNumberXdiPeerRoot = XdiLocalRoot.findLocalRoot(messageResult.getGraph()).findPeerRoot(cloudNumber.getXri(), true);
+			XdiPeerRoot cloudNumberXdiPeerRoot = XdiLocalRoot.findLocalRoot(messageResult.getGraph()).getPeerRoot(cloudNumber.getXri(), true);
 
 			Equivalence.setReferenceContextNode(requestedXdiPeerRoot.getContextNode(), cloudNumberXdiPeerRoot.getContextNode());
 
