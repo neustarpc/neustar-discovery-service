@@ -17,14 +17,14 @@ import xdi2.core.features.nodetypes.XdiAbstractMemberUnordered;
 import xdi2.core.features.nodetypes.XdiAttributeCollection;
 import xdi2.core.features.nodetypes.XdiAttributeMember;
 import xdi2.core.features.nodetypes.XdiAttributeSingleton;
-import xdi2.core.features.nodetypes.XdiLocalRoot;
+import xdi2.core.features.nodetypes.XdiCommonRoot;
 import xdi2.core.features.nodetypes.XdiPeerRoot;
 import xdi2.core.impl.memory.MemoryGraphFactory;
+import xdi2.core.syntax.CloudNumber;
+import xdi2.core.syntax.XDIAddress;
+import xdi2.core.syntax.XDIArc;
 import xdi2.core.util.CopyUtil;
 import xdi2.core.util.XRI2Util;
-import xdi2.core.xri3.CloudNumber;
-import xdi2.core.xri3.XDI3Segment;
-import xdi2.core.xri3.XDI3SubSegment;
 import xdi2.messaging.GetOperation;
 import xdi2.messaging.MessageEnvelope;
 import xdi2.messaging.MessageResult;
@@ -42,39 +42,39 @@ import biz.neustar.discovery.xrd.XRDService;
 import biz.neustar.discovery.xrd.XRDType;
 import biz.neustar.discovery.xrd.XRDUri;
 
-@ContributorMount(contributorXris={"{()}"})
+@ContributorMount(contributorXDIAddresses={"{()}"})
 public class DiscoveryContributor extends AbstractContributor implements MessageEnvelopeInterceptor {
 
 	private static final Logger log = LoggerFactory.getLogger(DiscoveryContributor.class);
 
-	public static final XDI3SubSegment XRI_SS_AC_URI = XDI3SubSegment.create("[<$uri>]");
-	public static final XDI3SubSegment XRI_SS_AS_URI = XDI3SubSegment.create("<$uri>");
+	public static final XDIArc XRI_ARC_AC_URI = XDIArc.create("[<$uri>]");
+	public static final XDIArc XRI_ARC_AS_URI = XDIArc.create("<$uri>");
 
 	private XRI2Resolver resolver = new XRI2XNSResolver();
 
 	@Override
-	public ContributorResult executeGetOnAddress(XDI3Segment[] contributorXris, XDI3Segment contributorsXri, XDI3Segment relativeTargetAddress, GetOperation operation, MessageResult messageResult, ExecutionContext executionContext) throws Xdi2MessagingException {
+	public ContributorResult executeGetOnAddress(XDIAddress[] contributorXDIAddresses, XDIAddress contributorsXDIAddress, XDIAddress relativeTargetXDIAddress, GetOperation operation, MessageResult messageResult, ExecutionContext executionContext) throws Xdi2MessagingException {
 
 		// prepare XRI
 
-		XDI3Segment requestedXdiPeerRootXri = contributorXris[contributorXris.length - 1];
+		XDIAddress requestedXdiPeerRootXDIAddress = contributorXDIAddresses[contributorXDIAddresses.length - 1];
 
-		XDI3Segment resolveXri = XdiPeerRoot.getXriOfPeerRootArcXri(requestedXdiPeerRootXri.getFirstSubSegment());
-		if (resolveXri == null) return ContributorResult.DEFAULT;
+		XDIAddress resolveXDIAddress = XdiPeerRoot.getXDIAddressOfPeerRootXDIArc(requestedXdiPeerRootXDIAddress.getFirstXDIArc());
+		if (resolveXDIAddress == null) return ContributorResult.DEFAULT;
 
-		CloudNumber resolveCloudNumber = CloudNumber.fromXri(resolveXri);
+		CloudNumber resolveCloudNumber = CloudNumber.fromXDIAddress(resolveXDIAddress);
 		String resolveINumber = resolveCloudNumber == null ? null : XRI2Util.cloudNumberToINumber(resolveCloudNumber);
-		if (resolveINumber != null) resolveXri = XDI3Segment.create(resolveINumber);
+		if (resolveINumber != null) resolveXDIAddress = XDIAddress.create(resolveINumber);
 
 		// resolve the XRI
 
-		if (log.isDebugEnabled()) log.debug("Resolving " + resolveXri);
+		if (log.isDebugEnabled()) log.debug("Resolving " + resolveXDIAddress);
 
 		XRD xrd;
 
 		try {
 
-			xrd = this.resolver.resolve(resolveXri);
+			xrd = this.resolver.resolve(resolveXDIAddress);
 			if (xrd == null) throw new Exception("No XRD.");
 		} catch (Exception ex) {
 
@@ -184,13 +184,13 @@ public class DiscoveryContributor extends AbstractContributor implements Message
 
 		// prepare result graph
 
-		XdiPeerRoot requestedXdiPeerRoot = XdiPeerRoot.fromContextNode(messageResult.getGraph().setDeepContextNode(requestedXdiPeerRootXri));
+		XdiPeerRoot requestedXdiPeerRoot = XdiPeerRoot.fromContextNode(messageResult.getGraph().setDeepContextNode(requestedXdiPeerRootXDIAddress));
 
 		// add original peer root
 
-		if (! cloudNumber.getXri().equals(requestedXdiPeerRoot.getXriOfPeerRoot())) {
+		if (! cloudNumber.getXDIAddress().equals(requestedXdiPeerRoot.getXDIAddressOfPeerRoot())) {
 
-			XdiPeerRoot cloudNumberXdiPeerRoot = XdiLocalRoot.findLocalRoot(messageResult.getGraph()).getPeerRoot(cloudNumber.getXri(), true);
+			XdiPeerRoot cloudNumberXdiPeerRoot = XdiCommonRoot.findCommonRoot(messageResult.getGraph()).getPeerRoot(cloudNumber.getXDIAddress(), true);
 
 			Equivalence.setReferenceContextNode(requestedXdiPeerRoot.getContextNode(), cloudNumberXdiPeerRoot.getContextNode());
 
@@ -199,25 +199,25 @@ public class DiscoveryContributor extends AbstractContributor implements Message
 
 		// add all URIs for all types
 
-		XdiAttributeCollection uriXdiAttributeCollection = requestedXdiPeerRoot.getXdiAttributeCollection(XRI_SS_AC_URI, true);
+		XdiAttributeCollection uriXdiAttributeCollection = requestedXdiPeerRoot.getXdiAttributeCollection(XRI_ARC_AC_URI, true);
 
 		for (Entry<String, List<String>> uriMapEntry : uriMap.entrySet()) {
 
 			String type = uriMapEntry.getKey();
 			List<String> uriList = uriMapEntry.getValue();
 
-			XDI3SubSegment typeXdiArcXri = XRI2Util.typeToXdiArcXri(type);
+			XDIArc typeXdiArcXri = XRI2Util.typeToXDIArc(type);
 
 			for (String uri : uriList) {
 
 				if (log.isDebugEnabled()) log.debug("Mapping URI " + uri + " for type XRI " + typeXdiArcXri);
 
-				XDI3SubSegment uriXdiMemberUnorderedArcXri = XdiAbstractMemberUnordered.createDigestArcXri(uri, true);
+				XDIArc uriXdiMemberUnorderedArcXri = XdiAbstractMemberUnordered.createDigestXDIArc(uri, XdiAttributeCollection.class);
 
 				XdiAttributeMember uriXdiAttributeMember = uriXdiAttributeCollection.setXdiMemberUnordered(uriXdiMemberUnorderedArcXri);
-				uriXdiAttributeMember.getXdiValue(true).getContextNode().setLiteral(uri);
+				uriXdiAttributeMember.setLiteralDataString(uri);
 
-				XdiAttributeCollection typeXdiAttributeCollection = requestedXdiPeerRoot.getXdiAttributeSingleton(typeXdiArcXri, true).getXdiAttributeCollection(XRI_SS_AC_URI, true);
+				XdiAttributeCollection typeXdiAttributeCollection = requestedXdiPeerRoot.getXdiAttributeSingleton(typeXdiArcXri, true).getXdiAttributeCollection(XRI_ARC_AC_URI, true);
 				XdiAttributeMember typeXdiAttributeMember = typeXdiAttributeCollection.setXdiMemberOrdered(-1);
 				Equivalence.setReferenceContextNode(typeXdiAttributeMember.getContextNode(), uriXdiAttributeMember.getContextNode());
 			}
@@ -230,10 +230,10 @@ public class DiscoveryContributor extends AbstractContributor implements Message
 
 				if (log.isDebugEnabled()) log.debug("Mapping default URI " + defaultUriForType + " for type XRI " + typeXdiArcXri);
 
-				XDI3SubSegment defaultUriForTypeXdiMemberUnorderedArcXri = XdiAbstractMemberUnordered.createDigestArcXri(defaultUriForType, true);
+				XDIArc defaultUriForTypeXdiMemberUnorderedXDIArc = XdiAbstractMemberUnordered.createDigestXDIArc(defaultUriForType, XdiAttributeCollection.class);
 
-				XdiAttributeMember defaultUriForTypeXdiAttributeMember = uriXdiAttributeCollection.setXdiMemberUnordered(defaultUriForTypeXdiMemberUnorderedArcXri);
-				XdiAttributeSingleton defaultUriForTypeXdiAttributeSingleton = requestedXdiPeerRoot.getXdiAttributeSingleton(typeXdiArcXri, true).getXdiAttributeSingleton(XRI_SS_AS_URI, true);
+				XdiAttributeMember defaultUriForTypeXdiAttributeMember = uriXdiAttributeCollection.setXdiMemberUnordered(defaultUriForTypeXdiMemberUnorderedXDIArc);
+				XdiAttributeSingleton defaultUriForTypeXdiAttributeSingleton = requestedXdiPeerRoot.getXdiAttributeSingleton(typeXdiArcXri, true).getXdiAttributeSingleton(XRI_ARC_AS_URI, true);
 				Equivalence.setReferenceContextNode(defaultUriForTypeXdiAttributeSingleton.getContextNode(), defaultUriForTypeXdiAttributeMember.getContextNode());
 			}
 		}
@@ -244,10 +244,10 @@ public class DiscoveryContributor extends AbstractContributor implements Message
 
 			if (log.isDebugEnabled()) log.debug("Mapping default URI " + defaultUri);
 
-			XDI3SubSegment defaultUriXdiMemberUnorderedArcXri = XdiAbstractMemberUnordered.createDigestArcXri(defaultUri, true);
+			XDIArc defaultUriXdiMemberUnorderedXDIArc = XdiAbstractMemberUnordered.createDigestXDIArc(defaultUri, XdiAttributeCollection.class);
 
-			XdiAttributeMember defaultUriXdiAttributeMember = uriXdiAttributeCollection.setXdiMemberUnordered(defaultUriXdiMemberUnorderedArcXri);
-			XdiAttributeSingleton defaultUriXdiAttributeSingleton = requestedXdiPeerRoot.getXdiAttributeSingleton(XRI_SS_AS_URI, true);
+			XdiAttributeMember defaultUriXdiAttributeMember = uriXdiAttributeCollection.setXdiMemberUnordered(defaultUriXdiMemberUnorderedXDIArc);
+			XdiAttributeSingleton defaultUriXdiAttributeSingleton = requestedXdiPeerRoot.getXdiAttributeSingleton(XRI_ARC_AS_URI, true);
 			Equivalence.setReferenceContextNode(defaultUriXdiAttributeSingleton.getContextNode(), defaultUriXdiAttributeMember.getContextNode());
 		}
 

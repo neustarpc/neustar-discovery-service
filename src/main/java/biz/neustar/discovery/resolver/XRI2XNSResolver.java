@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import xdi2.core.constants.XDIConstants;
-import xdi2.core.xri3.XDI3Segment;
+import xdi2.core.syntax.XDIAddress;
 import biz.neustar.discovery.xrd.XRD;
 
 public class XRI2XNSResolver implements XRI2Resolver {
@@ -21,7 +21,7 @@ public class XRI2XNSResolver implements XRI2Resolver {
 	private String authorityPersonalEndpointUrl;
 	private String authorityLegalEndpointUrl;
 
-	private Map<XDI3Segment, XRD> cache = new HashMap<XDI3Segment, XRD> ();
+	private Map<XDIAddress, XRD> cache = new HashMap<XDIAddress, XRD> ();
 
 	public void reset() {
 
@@ -29,43 +29,43 @@ public class XRI2XNSResolver implements XRI2Resolver {
 	}
 
 	@Override
-	public XRD resolve(XDI3Segment resolveXri) throws IOException, DocumentException {
+	public XRD resolve(XDIAddress resolveXDIAddress) throws IOException, DocumentException {
 
 		String endpointUrl = null;
 
 		// check cache
 
-		XRD cachedXRD = this.cache.get(resolveXri);
+		XRD cachedXRD = this.cache.get(resolveXDIAddress);
 
 		if (cachedXRD != null) {
 
-			if (log.isDebugEnabled()) log.debug("Getting cached XRD for " + resolveXri);
+			if (log.isDebugEnabled()) log.debug("Getting cached XRD for " + resolveXDIAddress);
 
 			return cachedXRD;
 		}
 
 		// construct endpoint URL
 
-		if (log.isDebugEnabled()) log.debug("Resolving XRD for " + resolveXri);
+		if (log.isDebugEnabled()) log.debug("Resolving XRD for " + resolveXDIAddress);
 
-		if (resolveXri.getFirstSubSegment().getCs() == null && 
-				resolveXri.getFirstSubSegment().hasXRef() && 
-				resolveXri.getFirstSubSegment().getXRef().hasSegment()) {
+		if (resolveXDIAddress.getFirstXDIArc().getCs() == null && 
+				resolveXDIAddress.getFirstXDIArc().hasXRef() && 
+				resolveXDIAddress.getFirstXDIArc().getXRef().hasXDIAddress()) {
 
-			resolveXri = resolveXri.getFirstSubSegment().getXRef().getSegment();
+			resolveXDIAddress = resolveXDIAddress.getFirstXDIArc().getXRef().getXDIAddress();
 		}
 
-		if (XDIConstants.CS_AUTHORITY_PERSONAL.equals(resolveXri.getFirstSubSegment().getCs())) endpointUrl = this.getAuthorityPersonalEndpointUrl();
-		if (XDIConstants.CS_AUTHORITY_LEGAL.equals(resolveXri.getFirstSubSegment().getCs())) endpointUrl = this.getAuthorityLegalEndpointUrl();
+		if (XDIConstants.CS_AUTHORITY_PERSONAL.equals(resolveXDIAddress.getFirstXDIArc().getCs())) endpointUrl = this.getAuthorityPersonalEndpointUrl();
+		if (XDIConstants.CS_AUTHORITY_LEGAL.equals(resolveXDIAddress.getFirstXDIArc().getCs())) endpointUrl = this.getAuthorityLegalEndpointUrl();
 
 		if (endpointUrl == null) {
 
-			throw new IOException("Don't know how to resolve XRI: " + resolveXri);
+			throw new IOException("Don't know how to resolve XRI: " + resolveXDIAddress);
 		}
 
-		if (resolveXri.toString().charAt(0) == '[') endpointUrl += resolveXri.toString().substring(3);
-		else if (resolveXri.toString().charAt(1) == '!') endpointUrl += resolveXri.toString().substring(1);
-		else endpointUrl += '*' + resolveXri.toString().substring(1);
+		if (resolveXDIAddress.toString().charAt(0) == '[') endpointUrl += resolveXDIAddress.toString().substring(3);
+		else if (resolveXDIAddress.toString().charAt(1) == '!') endpointUrl += resolveXDIAddress.toString().substring(1);
+		else endpointUrl += '*' + resolveXDIAddress.toString().substring(1);
 
 		// connect
 
@@ -91,7 +91,7 @@ public class XRI2XNSResolver implements XRI2Resolver {
 
 		// cache
 
-		this.cache.put(resolveXri, xrd);
+		this.cache.put(resolveXDIAddress, xrd);
 
 		// done
 
