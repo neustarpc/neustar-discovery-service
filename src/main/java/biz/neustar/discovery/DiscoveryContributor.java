@@ -62,7 +62,7 @@ public class DiscoveryContributor extends AbstractContributor implements Message
 		XDIAddress resolveXDIAddress = XdiPeerRoot.getXDIAddressOfPeerRootXDIArc(requestedXdiPeerRootXDIAddress.getFirstXDIArc());
 		if (resolveXDIAddress == null) return ContributorResult.DEFAULT;
 
-		CloudNumber resolveCloudNumber = CloudNumber.fromXDIAddress(resolveXDIAddress);
+		CloudNumber resolveCloudNumber = CloudNumber.isValid(resolveXDIAddress) ? CloudNumber.fromXDIAddress(resolveXDIAddress) : null;
 		String resolveINumber = resolveCloudNumber == null ? null : XRI2Util.cloudNumberToINumber(resolveCloudNumber);
 		if (resolveINumber != null) resolveXDIAddress = XDIAddress.create(resolveINumber);
 
