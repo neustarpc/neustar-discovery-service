@@ -13,9 +13,8 @@ import org.slf4j.LoggerFactory;
 
 import xdi2.core.Graph;
 import xdi2.core.features.equivalence.Equivalence;
-import xdi2.core.features.nodetypes.XdiAbstractMemberUnordered;
 import xdi2.core.features.nodetypes.XdiAttributeCollection;
-import xdi2.core.features.nodetypes.XdiAttributeMember;
+import xdi2.core.features.nodetypes.XdiAttributeInstance;
 import xdi2.core.features.nodetypes.XdiAttributeSingleton;
 import xdi2.core.features.nodetypes.XdiCommonRoot;
 import xdi2.core.features.nodetypes.XdiPeerRoot;
@@ -212,14 +211,14 @@ public class DiscoveryContributor extends AbstractContributor implements Message
 
 				if (log.isDebugEnabled()) log.debug("Mapping URI " + uri + " for type XRI " + typeXdiArcXri);
 
-				XDIArc uriXdiMemberUnorderedArcXri = XdiAbstractMemberUnordered.createDigestXDIArc(uri, XdiAttributeCollection.class);
+				String uriXdiInstanceUnorderedLiteral = XDIArc.literalFromDigest(uri);
 
-				XdiAttributeMember uriXdiAttributeMember = uriXdiAttributeCollection.setXdiMemberUnordered(uriXdiMemberUnorderedArcXri);
-				uriXdiAttributeMember.setLiteralDataString(uri);
+				XdiAttributeInstance uriXdiAttributeInstance = uriXdiAttributeCollection.setXdiInstanceUnordered(true, false, uriXdiInstanceUnorderedLiteral);
+				uriXdiAttributeInstance.setLiteralDataString(uri);
 
 				XdiAttributeCollection typeXdiAttributeCollection = requestedXdiPeerRoot.getXdiAttributeSingleton(typeXdiArcXri, true).getXdiAttributeCollection(XRI_ARC_AC_URI, true);
-				XdiAttributeMember typeXdiAttributeMember = typeXdiAttributeCollection.setXdiMemberOrdered(-1);
-				Equivalence.setReferenceContextNode(typeXdiAttributeMember.getContextNode(), uriXdiAttributeMember.getContextNode());
+				XdiAttributeInstance typeXdiAttributeInstance = typeXdiAttributeCollection.setXdiInstanceOrdered(false, false, -1);
+				Equivalence.setReferenceContextNode(typeXdiAttributeInstance.getContextNode(), uriXdiAttributeInstance.getContextNode());
 			}
 
 			// add default URI for this type
@@ -230,11 +229,11 @@ public class DiscoveryContributor extends AbstractContributor implements Message
 
 				if (log.isDebugEnabled()) log.debug("Mapping default URI " + defaultUriForType + " for type XRI " + typeXdiArcXri);
 
-				XDIArc defaultUriForTypeXdiMemberUnorderedXDIArc = XdiAbstractMemberUnordered.createDigestXDIArc(defaultUriForType, XdiAttributeCollection.class);
+				String defaultUriForTypeXdiInstanceUnorderedLiteral = XDIArc.literalFromDigest(defaultUriForType);
 
-				XdiAttributeMember defaultUriForTypeXdiAttributeMember = uriXdiAttributeCollection.setXdiMemberUnordered(defaultUriForTypeXdiMemberUnorderedXDIArc);
+				XdiAttributeInstance defaultUriForTypeXdiAttributeInstance = uriXdiAttributeCollection.setXdiInstanceUnordered(true, false, defaultUriForTypeXdiInstanceUnorderedLiteral);
 				XdiAttributeSingleton defaultUriForTypeXdiAttributeSingleton = requestedXdiPeerRoot.getXdiAttributeSingleton(typeXdiArcXri, true).getXdiAttributeSingleton(XRI_ARC_AS_URI, true);
-				Equivalence.setReferenceContextNode(defaultUriForTypeXdiAttributeSingleton.getContextNode(), defaultUriForTypeXdiAttributeMember.getContextNode());
+				Equivalence.setReferenceContextNode(defaultUriForTypeXdiAttributeSingleton.getContextNode(), defaultUriForTypeXdiAttributeInstance.getContextNode());
 			}
 		}
 
@@ -244,11 +243,11 @@ public class DiscoveryContributor extends AbstractContributor implements Message
 
 			if (log.isDebugEnabled()) log.debug("Mapping default URI " + defaultUri);
 
-			XDIArc defaultUriXdiMemberUnorderedXDIArc = XdiAbstractMemberUnordered.createDigestXDIArc(defaultUri, XdiAttributeCollection.class);
+			String defaultUriXdiInstanceUnorderedLiteral = XDIArc.literalFromDigest(defaultUri);
 
-			XdiAttributeMember defaultUriXdiAttributeMember = uriXdiAttributeCollection.setXdiMemberUnordered(defaultUriXdiMemberUnorderedXDIArc);
+			XdiAttributeInstance defaultUriXdiAttributeInstance = uriXdiAttributeCollection.setXdiInstanceUnordered(true, false, defaultUriXdiInstanceUnorderedLiteral);
 			XdiAttributeSingleton defaultUriXdiAttributeSingleton = requestedXdiPeerRoot.getXdiAttributeSingleton(XRI_ARC_AS_URI, true);
-			Equivalence.setReferenceContextNode(defaultUriXdiAttributeSingleton.getContextNode(), defaultUriXdiAttributeMember.getContextNode());
+			Equivalence.setReferenceContextNode(defaultUriXdiAttributeSingleton.getContextNode(), defaultUriXdiAttributeInstance.getContextNode());
 		}
 
 		// add extension
