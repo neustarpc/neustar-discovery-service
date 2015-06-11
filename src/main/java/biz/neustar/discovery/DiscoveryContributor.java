@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import xdi2.core.ContextNode;
 import xdi2.core.Graph;
 import xdi2.core.features.equivalence.Equivalence;
 import xdi2.core.features.nodetypes.XdiAttributeCollection;
@@ -99,7 +100,7 @@ public class DiscoveryContributor extends AbstractContributor implements Message
 		String canonicalId = xrd.getCanonicalId();
 		if (canonicalId == null) throw new Xdi2MessagingException("Unable to read CanonicalId from XRD.", null, executionContext);
 
-		String iNumber = canonicalId;
+		String iNumber = workaroundStarShift(canonicalId);
 		CloudNumber cloudNumber = XRI2Util.iNumberToCloudNumber(iNumber);
 		if (cloudNumber == null) cloudNumber = CloudNumber.create(iNumber);
 		if (cloudNumber == null) throw new Xdi2MessagingException("Unable to read Cloud Number from CanonicalId: " + canonicalId, null, executionContext);
@@ -169,6 +170,8 @@ public class DiscoveryContributor extends AbstractContributor implements Message
 		try {
 
 			if (extension != null && ! extension.trim().isEmpty()) {
+
+				extension = workaroundStarShift(extension);
 
 				extensionGraph = MemoryGraphFactory.getInstance().parseGraph(extension, "XDI DISPLAY", null);
 			} else {
@@ -255,7 +258,9 @@ public class DiscoveryContributor extends AbstractContributor implements Message
 
 		if (extensionGraph != null) {
 
-			CopyUtil.copyGraph(extensionGraph, messageResult.getGraph(), null);
+			ContextNode peerRootContextNode = messageResult.getGraph().getRootContextNode().setContextNode(cloudNumber.getPeerRootXDIArc());
+
+			CopyUtil.copyContextNodeContents(extensionGraph.getRootContextNode(), peerRootContextNode, null);
 		}
 
 		// done
@@ -298,5 +303,17 @@ public class DiscoveryContributor extends AbstractContributor implements Message
 	public void setResolver(XRI2Resolver resolver) {
 
 		this.resolver = resolver;
+	}
+
+	/*
+	 * Helper methods
+	 */
+
+	private static String workaroundStarShift(String string) {
+
+		string = string.replace("[=]!:", "=!:");
+		string = string.replace("[+]!:", "+!:");
+
+		return string;
 	}
 }
