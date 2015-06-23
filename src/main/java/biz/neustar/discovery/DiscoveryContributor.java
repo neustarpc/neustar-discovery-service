@@ -317,6 +317,8 @@ public class DiscoveryContributor extends AbstractContributor implements Message
 
 	private static String workaroundStarShift(String string) {
 
+		if (string == null) return null;
+
 		string = string.replace("[=]!:", "=!:");
 		string = string.replace("[+]!:", "+!:");
 		string = string.replace("%5B%3D%5D", "%3D");
