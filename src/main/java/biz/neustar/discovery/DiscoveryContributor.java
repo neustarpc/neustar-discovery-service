@@ -160,6 +160,8 @@ public class DiscoveryContributor extends AbstractContributor implements Message
 		XRDService defaultUriService = xrd.getDefaultService();
 		String defaultUri = defaultUriService == null ? null : defaultUriService.getUris().get(0).getUri();
 
+		defaultUri = workaroundStarShift(defaultUri);
+
 		if (log.isDebugEnabled()) log.debug("Default URI: " + defaultUri);
 
 		// extract extension
@@ -213,6 +215,8 @@ public class DiscoveryContributor extends AbstractContributor implements Message
 
 			for (String uri : uriList) {
 
+				uri = workaroundStarShift(uri);
+
 				if (log.isDebugEnabled()) log.debug("Mapping URI " + uri + " for type XRI " + typeXdiArcXri);
 
 				String uriXdiInstanceUnorderedLiteral = XDIArc.literalFromDigest(uri);
@@ -230,6 +234,8 @@ public class DiscoveryContributor extends AbstractContributor implements Message
 			if (uriList.size() > 0) {
 
 				String defaultUriForType = uriList.get(0);
+
+				defaultUriForType = workaroundStarShift(defaultUriForType);
 
 				if (log.isDebugEnabled()) log.debug("Mapping default URI " + defaultUriForType + " for type XRI " + typeXdiArcXri);
 
@@ -313,6 +319,8 @@ public class DiscoveryContributor extends AbstractContributor implements Message
 
 		string = string.replace("[=]!:", "=!:");
 		string = string.replace("[+]!:", "+!:");
+		string = string.replace("%5B%3D%5D", "%3D");
+		string = string.replace("%5B%2B%5D", "%2B");
 
 		return string;
 	}
