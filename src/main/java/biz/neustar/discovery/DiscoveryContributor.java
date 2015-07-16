@@ -25,14 +25,14 @@ import xdi2.core.syntax.XDIAddress;
 import xdi2.core.syntax.XDIArc;
 import xdi2.core.util.CopyUtil;
 import xdi2.core.util.XRI2Util;
-import xdi2.messaging.GetOperation;
 import xdi2.messaging.MessageEnvelope;
-import xdi2.messaging.MessageResult;
-import xdi2.messaging.context.ExecutionContext;
-import xdi2.messaging.exceptions.Xdi2MessagingException;
-import xdi2.messaging.target.contributor.AbstractContributor;
+import xdi2.messaging.operations.GetOperation;
 import xdi2.messaging.target.contributor.ContributorMount;
 import xdi2.messaging.target.contributor.ContributorResult;
+import xdi2.messaging.target.contributor.impl.AbstractContributor;
+import xdi2.messaging.target.exceptions.Xdi2MessagingException;
+import xdi2.messaging.target.execution.ExecutionContext;
+import xdi2.messaging.target.execution.ExecutionResult;
 import xdi2.messaging.target.interceptor.InterceptorResult;
 import xdi2.messaging.target.interceptor.MessageEnvelopeInterceptor;
 import biz.neustar.discovery.resolver.XRI2Resolver;
@@ -53,7 +53,7 @@ public class DiscoveryContributor extends AbstractContributor implements Message
 	private XRI2Resolver resolver = new XRI2XNSResolver();
 
 	@Override
-	public ContributorResult executeGetOnAddress(XDIAddress[] contributorXDIAddresses, XDIAddress contributorsXDIAddress, XDIAddress relativeTargetXDIAddress, GetOperation operation, MessageResult messageResult, ExecutionContext executionContext) throws Xdi2MessagingException {
+	public ContributorResult executeGetOnAddress(XDIAddress[] contributorXDIAddresses, XDIAddress contributorsXDIAddress, XDIAddress relativeTargetXDIAddress, GetOperation operation, Graph resultGraph, ExecutionContext executionContext) throws Xdi2MessagingException {
 
 		// prepare XRI
 
@@ -189,13 +189,13 @@ public class DiscoveryContributor extends AbstractContributor implements Message
 
 		// prepare result graph
 
-		XdiPeerRoot requestedXdiPeerRoot = XdiPeerRoot.fromContextNode(messageResult.getGraph().setDeepContextNode(requestedXdiPeerRootXDIAddress));
+		XdiPeerRoot requestedXdiPeerRoot = XdiPeerRoot.fromContextNode(resultGraph.setDeepContextNode(requestedXdiPeerRootXDIAddress));
 
 		// add original peer root
 
 		if (! cloudNumber.getXDIAddress().equals(requestedXdiPeerRoot.getXDIAddressOfPeerRoot())) {
 
-			XdiPeerRoot cloudNumberXdiPeerRoot = XdiCommonRoot.findCommonRoot(messageResult.getGraph()).getPeerRoot(cloudNumber.getXDIAddress(), true);
+			XdiPeerRoot cloudNumberXdiPeerRoot = XdiCommonRoot.findCommonRoot(resultGraph).getPeerRoot(cloudNumber.getXDIAddress(), true);
 
 			Equivalence.setReferenceContextNode(requestedXdiPeerRoot.getContextNode(), cloudNumberXdiPeerRoot.getContextNode());
 
@@ -264,7 +264,7 @@ public class DiscoveryContributor extends AbstractContributor implements Message
 
 		if (extensionGraph != null) {
 
-			ContextNode peerRootContextNode = messageResult.getGraph().getRootContextNode().setContextNode(cloudNumber.getPeerRootXDIArc());
+			ContextNode peerRootContextNode = resultGraph.getRootContextNode().setContextNode(cloudNumber.getPeerRootXDIArc());
 
 			CopyUtil.copyContextNodeContents(extensionGraph.getRootContextNode(), peerRootContextNode, null);
 		}
@@ -279,7 +279,7 @@ public class DiscoveryContributor extends AbstractContributor implements Message
 	 */
 
 	@Override
-	public InterceptorResult before(MessageEnvelope messageEnvelope, MessageResult messageResult, ExecutionContext executionContext) throws Xdi2MessagingException {
+	public InterceptorResult before(MessageEnvelope messageEnvelope, ExecutionResult executionResult, ExecutionContext executionContext) throws Xdi2MessagingException {
 
 		this.getResolver().reset();
 
@@ -287,13 +287,13 @@ public class DiscoveryContributor extends AbstractContributor implements Message
 	}
 
 	@Override
-	public InterceptorResult after(MessageEnvelope messageEnvelope, MessageResult messageResult, ExecutionContext executionContext) throws Xdi2MessagingException {
+	public InterceptorResult after(MessageEnvelope messageEnvelope, ExecutionResult executionResult, ExecutionContext executionContext) throws Xdi2MessagingException {
 
 		return InterceptorResult.DEFAULT;
 	}
 
 	@Override
-	public void exception(MessageEnvelope messageEnvelope, MessageResult messageResult, ExecutionContext executionContext, Exception ex) {
+	public void exception(MessageEnvelope messageEnvelope, ExecutionResult executionResult, ExecutionContext executionContext, Exception ex) {
 
 	}
 
